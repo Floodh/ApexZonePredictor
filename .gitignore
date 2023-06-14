@@ -4,3 +4,5 @@ obj
 basemap.png
 crossmap.png
 EdgeMap.png
+crossmap_*.png
+testmap*

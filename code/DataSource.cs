@@ -10,6 +10,13 @@ static class DataSource
     //  560     0               1912    0
 
     //  560     1352            1912    1352
+    private const double we_ringRadius0 = 100000;
+    private const double we_ringRadius1 = (1297.0 - 578.0) / 2;
+    private const double we_ringRadius2 = (1264.0 - 877.0) / 2;
+    private const double we_ringRadius3 = (1233.0 - 996.0) / 2;
+    private const double we_ringRadius4 = (1155.0 - 1038.0) / 2;
+    private const double we_ringRadius5 = (1112.0 - 1055.0) / 2;
+    private static readonly double[] we_ringRadius = new double[] {we_ringRadius0, we_ringRadius1, we_ringRadius2, we_ringRadius3, we_ringRadius4, we_ringRadius5};
 
     public static Bitmap CaptureMap()
     {
@@ -192,7 +199,7 @@ static class DataSource
 
     
     private const int iterations = 10;
-    public static Point GetRingCenter(Bitmap edgemap, Point start)
+    public static Point GetRingCenter(Bitmap edgemap, Point start, Circle bounds)
     {
         //  the idea is that we place a cross in the middle of the map
         //  then if parts of the cross overlap with the detected ring
@@ -227,12 +234,16 @@ static class DataSource
                     //Console.WriteLine($"Color : {edgemap.GetPixel(walkPoint.X, walkPoint.Y).IsNamedColor}");
                     Color pixel = edgemap.GetPixel(walkPoint.X, walkPoint.Y);
                     if (pixel.R == Color.Purple.R & pixel.G == Color.Purple.G & pixel.B == pixel.B)
+                    if (bounds.Contains(walkPoint))
                     {
                         int distance = walkPoint.X - center.X + walkPoint.Y - center.Y;
                         distance = Math.Abs(distance);
                         pullX += (double)movePoint.X * (double)distance * 0.005;
                         pullY += (double)movePoint.Y * (double)distance * 0.005;
-                        //Console.WriteLine($"    Pulls : {pullX}, {pullY}");
+                    }
+                    else
+                    {
+                        //edgemap.
                     }
                 }
 
@@ -252,14 +263,21 @@ static class DataSource
 
     }
 
-    public static List<Point> GetRingCenters(Bitmap edgemap)
+    public static List<Point> GetRingCenters(int gameId)
     {
+
         List<Point> result = new List<Point>();
-        Point center = new Point(edgemap.Width / 2, edgemap.Height / 2);
+        Point center = new Point(mapResolution.Width / 2, mapResolution.Height / 2);
         for (int i = 0; i < 5; i++)
         {
-            center = GetRingCenter(edgemap, center);
+            if (!File.Exists($"ZoneData_{gameId}_{i}.png"))
+                break;
+            Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap($"ZoneData_{gameId}_{i}.png"), new Bitmap("basemap.png"));
+            edgemap.Save($"testmap{i}.png", ImageFormat.Png);
+            center = GetRingCenter(edgemap, center, new Circle(center, we_ringRadius[i]));
+            Console.WriteLine(center);
             result.Add(center);
+
         }
 
         return result;
