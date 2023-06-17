@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Numerics;
 
 static class DataSource
 {
@@ -11,12 +12,18 @@ static class DataSource
 
     //  560     1352            1912    1352
     private const double we_ringRadius0 = 100000;
-    private const double we_ringRadius1 = (1297.0 - 578.0) / 2;
-    private const double we_ringRadius2 = (1264.0 - 877.0) / 2;
-    private const double we_ringRadius3 = (1233.0 - 996.0) / 2;
-    private const double we_ringRadius4 = (1155.0 - 1038.0) / 2;
-    private const double we_ringRadius5 = (1112.0 - 1055.0) / 2;
+    private const double we_ringRadius1 = 10 + (1297.0 - 578.0) / 2;
+    private const double we_ringRadius2 = 10 + (1264.0 - 877.0) / 2;
+    private const double we_ringRadius3 = 10 + (1233.0 - 996.0) / 2;
+    private const double we_ringRadius4 = 10 + (1155.0 - 1038.0) / 2;
+    private const double we_ringRadius5 = 10 + (1112.0 - 1055.0) / 2;
     private static readonly double[] we_ringRadius = new double[] {we_ringRadius0, we_ringRadius1, we_ringRadius2, we_ringRadius3, we_ringRadius4, we_ringRadius5};
+
+    private static readonly float[] we_ringPullMultipler = new float[6] {0.0025f, 0.0025f, 0.0025f, 0.0025f, 0.0055f, 0.0155f};
+
+
+    private const int iterations = 25;
+    
 
     public static Bitmap CaptureMap()
     {
@@ -198,8 +205,8 @@ static class DataSource
     }
 
     
-    private const int iterations = 10;
-    public static Point GetRingCenter(Bitmap edgemap, Point start, Circle bounds)
+    
+    public static Point GetRingCenter(Bitmap edgemap, Point start, Circle bounds, int ring)
     {
         //  the idea is that we place a cross in the middle of the map
         //  then if parts of the cross overlap with the detected ring
@@ -209,16 +216,18 @@ static class DataSource
         //  after a few iterations of this the cross will be align 
         //  with the ring circle
         Point center = start;
-        Point[] moveArray = new Point[4]{new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1)};
-
+        Point[] moveArray = new Point[8]{
+            new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1),
+            new Point(1, 1), new Point(-1, -1), new Point(-1, 1), new Point(1, -1)
+            };
+        int radius = (int)we_ringRadius[ring];    
 
 
 
         for (int i = 0; i < iterations; i++)
         {
 
-            double pullX = 0.0;
-            double pullY = 0.0;
+            Vector2 pull = new Vector2(0.0f, 0.0f);
 
             foreach (Point movePoint in moveArray)
             {
@@ -236,22 +245,20 @@ static class DataSource
                     if (pixel.R == Color.Purple.R & pixel.G == Color.Purple.G & pixel.B == pixel.B)
                     if (bounds.Contains(walkPoint))
                     {
-                        int distance = walkPoint.X - center.X + walkPoint.Y - center.Y;
-                        distance = Math.Abs(distance);
-                        pullX += (double)movePoint.X * (double)distance * 0.005;
-                        pullY += (double)movePoint.Y * (double)distance * 0.005;
-                    }
-                    else
-                    {
-                        //edgemap.
+                        float dx = (float)(walkPoint.X - center.X);
+                        float dy = (float)(walkPoint.Y - center.Y);
+
+                        float distance = (float)Math.Sqrt((dx * dx) + (dy * dy));
+
+                        pull.X += (float)movePoint.X * distance * we_ringPullMultipler[ring];
+                        pull.Y += (float)movePoint.Y * distance * we_ringPullMultipler[ring];
                     }
                 }
 
             }
-
-            // Console.WriteLine($"Pulls : {pullX}, {pullY}");
+            Console.WriteLine($"Pulls : {pull.X}, {pull.Y}, multiplier = {we_ringPullMultipler[ring]}");
             // Console.WriteLine($"Old point = {center}");
-            center = new Point(center.X + ((int)pullX), center.Y + ((int)pullY));
+            center = new Point(center.X + ((int)pull.X), center.Y + ((int)pull.Y));
             // Console.WriteLine($"new point = {center}\n");
 
         }
@@ -274,7 +281,7 @@ static class DataSource
                 break;
             Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap($"ZoneData_{gameId}_{i}.png"), new Bitmap("basemap.png"));
             edgemap.Save($"testmap{i}.png", ImageFormat.Png);
-            center = GetRingCenter(edgemap, center, new Circle(center, we_ringRadius[i]));
+            center = GetRingCenter(edgemap, center, new Circle(center, we_ringRadius[i]), i + 1);
             Console.WriteLine(center);
             result.Add(center);
 
@@ -289,8 +296,10 @@ static class DataSource
     public static void DrawCross(Bitmap canvas, Point crossLocation)
     {
 
-        Point[] moveArray = new Point[4]{new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1)};
-
+        Point[] moveArray = new Point[8]{
+            new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1),
+            new Point(1, 1), new Point(-1, -1), new Point(-1, 1), new Point(1, -1)
+            };
         foreach (Point movePoint in moveArray)
         {
 
