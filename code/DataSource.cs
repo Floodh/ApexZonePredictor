@@ -178,7 +178,7 @@ static class DataSource
         return baseMap;
     }
 
-    private const int edgeMargin = 7;
+    private const int edgeMargin = 2;
     public static Bitmap FormEdgemap(Bitmap source, Bitmap basemap)
     {
 
@@ -208,65 +208,65 @@ static class DataSource
     
     public static Point GetRingCenter(Bitmap edgemap, Point start, Circle bounds, int ring)
     {
-        //  the idea is that we place a cross in the middle of the map
-        //  then if parts of the cross overlap with the detected ring
-        //  then the cross will be pulled towards those pixels
-        //  the closer the distance from the middle of the cross to the
-        //  overlapped pixel is, the harder it will pull
-        //  after a few iterations of this the cross will be align 
-        //  with the ring circle
+
+
         Point center = start;
         Point[] moveArray = new Point[8]{
             new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1),
             new Point(1, 1), new Point(-1, -1), new Point(-1, 1), new Point(1, -1)
             };
-        int radius = (int)we_ringRadius[ring];    
-
+        int radius = (int)we_ringRadius[ring];  
 
 
         for (int i = 0; i < iterations; i++)
         {
+            
 
-            Vector2 pull = new Vector2(0.0f, 0.0f);
-
-            foreach (Point movePoint in moveArray)
+            Point pullPoint = Point.Empty;
+            foreach (Point offsetPoint in moveArray)
             {
 
+                //  point closests to the radius
+                Point edge = center;
+                double distance = 0.0;
 
                 Point walkPoint = center;
+
                 while (true)
                 {
-                    walkPoint.Offset(movePoint.X, movePoint.Y);
+                    walkPoint.Offset(offsetPoint);
                     if (!mapBounds.Contains(walkPoint))
                         break;
-
-                    //Console.WriteLine($"Color : {edgemap.GetPixel(walkPoint.X, walkPoint.Y).IsNamedColor}");
+                    
                     Color pixel = edgemap.GetPixel(walkPoint.X, walkPoint.Y);
                     if (pixel.R == Color.Purple.R & pixel.G == Color.Purple.G & pixel.B == pixel.B)
-                    if (bounds.Contains(walkPoint))
                     {
-                        float dx = (float)(walkPoint.X - center.X);
-                        float dy = (float)(walkPoint.Y - center.Y);
+                        int dx = walkPoint.X - center.X;
+                        int dy = walkPoint.Y - center.Y;
+                        double newDistance = Math.Sqrt((double)(dx * dx + dy * dy));
 
-                        float distance = (float)Math.Sqrt((dx * dx) + (dy * dy));
+                        if (Math.Abs(radius - newDistance) < Math.Abs(radius - distance))
+                        {
+                            edge = walkPoint;
+                            distance = newDistance;
+                        }
 
-                        pull.X += (float)movePoint.X * distance * we_ringPullMultipler[ring];
-                        pull.Y += (float)movePoint.Y * distance * we_ringPullMultipler[ring];
                     }
+                    
+                    
                 }
 
+                //  just add the point immediately, we will get the avg later
+                pullPoint = new Point(pullPoint.X + edge.X, pullPoint.Y + edge.Y);
+
             }
-            Console.WriteLine($"Pulls : {pull.X}, {pull.Y}, multiplier = {we_ringPullMultipler[ring]}");
-            // Console.WriteLine($"Old point = {center}");
-            center = new Point(center.X + ((int)pull.X), center.Y + ((int)pull.Y));
-            // Console.WriteLine($"new point = {center}\n");
+
+            pullPoint = new Point(pullPoint.X / moveArray.Length, pullPoint.Y / moveArray.Length);
+            center = pullPoint;
 
         }
 
-
         return center;
-
-
 
     }
 
