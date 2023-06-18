@@ -1,26 +1,24 @@
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Numerics;
 
 static class DataSource
 {
 
     private static readonly Size resolution = new Size(2560, 1440);
-    private static readonly Size mapResolution = new Size(1912 - 560, 1352 - 0);
+    public static readonly Size mapResolution = new Size(1912 - 560, 1352 - 0);
     private static readonly Rectangle mapBounds = new Rectangle(0, 0, mapResolution.Width, mapResolution.Height);
     //  560     0               1912    0
 
     //  560     1352            1912    1352
-    private const double we_ringRadius0 = 100000;
-    private const double we_ringRadius1 = 10 + (1297.0 - 578.0) / 2;
-    private const double we_ringRadius2 = 10 + (1264.0 - 877.0) / 2;
-    private const double we_ringRadius3 = 10 + (1233.0 - 996.0) / 2;
-    private const double we_ringRadius4 = 10 + (1155.0 - 1038.0) / 2;
-    private const double we_ringRadius5 = 10 + (1112.0 - 1055.0) / 2;
-    private static readonly double[] we_ringRadius = new double[] {we_ringRadius0, we_ringRadius1, we_ringRadius2, we_ringRadius3, we_ringRadius4, we_ringRadius5};
+    public const double we_ringRadius0 = 100000;
+    public const double we_ringRadius1 = 10 + (1297.0 - 578.0) / 2;
+    public const double we_ringRadius2 = 10 + (1264.0 - 877.0) / 2;
+    public const double we_ringRadius3 = 10 + (1233.0 - 996.0) / 2;
+    public const double we_ringRadius4 = 10 + (1155.0 - 1038.0) / 2;
+    public const double we_ringRadius5 = 10 + (1112.0 - 1055.0) / 2;
+    public static readonly double[] we_ringRadius = new double[] {we_ringRadius0, we_ringRadius1, we_ringRadius2, we_ringRadius3, we_ringRadius4, we_ringRadius5};
 
     private static readonly float[] we_ringPullMultipler = new float[6] {0.0025f, 0.0025f, 0.0025f, 0.0025f, 0.0055f, 0.0155f};
-
 
     private const int iterations = 25;
     
@@ -206,7 +204,7 @@ static class DataSource
 
     
     
-    public static Point GetRingCenter(Bitmap edgemap, Point start, Circle bounds, int ring)
+    public static Point GetRingCenter(Bitmap edgemap, Point start, int ring)
     {
 
 
@@ -261,7 +259,12 @@ static class DataSource
 
             }
 
-            pullPoint = new Point(pullPoint.X / moveArray.Length, pullPoint.Y / moveArray.Length);
+
+
+
+            pullPoint = new Point(
+                pullPoint.X / moveArray.Length, 
+                pullPoint.Y / moveArray.Length);
             center = pullPoint;
 
         }
@@ -281,7 +284,7 @@ static class DataSource
                 break;
             Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap($"ZoneData_{gameId}_{i}.png"), new Bitmap("basemap.png"));
             edgemap.Save($"testmap{i}.png", ImageFormat.Png);
-            center = GetRingCenter(edgemap, center, new Circle(center, we_ringRadius[i]), i + 1);
+            center = GetRingCenter(edgemap, center, i + 1);
             Console.WriteLine(center);
             result.Add(center);
 

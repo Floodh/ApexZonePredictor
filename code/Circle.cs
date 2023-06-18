@@ -1,9 +1,11 @@
 using System.Drawing;
 
-struct Circle
+//  this will be needed later for the ban location data
+readonly struct Circle
 {
-    Point position = Point.Empty;
-    double radius = 0.0;
+    readonly Point position = Point.Empty;
+    readonly double radius = 0.0;
+    
     public Circle(Point position, double radius)
     {
         this.position = position;

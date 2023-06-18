@@ -21,7 +21,7 @@ static class MainClass
 
 
         //Bitmap edgemap = DataSource.FormEdgemap(new Bitmap("ZoneData_0_0.png"), new Bitmap("basemap.png"));
-        List<Point> ringCenters = DataSource.GetRingCenters(0);
+        List<Point> ringCenters = DataSource.GetRingCenters(4);
         int i = 0;
         foreach (Point ringCenter in ringCenters)
         {
@@ -31,6 +31,20 @@ static class MainClass
             canvas.Save($"crossmap_{i}.png", ImageFormat.Png);
             i++;
         }
+
+
+        Console.WriteLine("----- Prediction -----");
+        {
+            Point finalZone = Predictor.PredictFinalZone(ringCenters[0], ringCenters[1]);
+            Bitmap canvas = new Bitmap($"testmap4.png");
+            DataSource.DrawCross(canvas, finalZone);
+            canvas.Save($"FinalZonePrediction.png", ImageFormat.Png);
+
+            Console.WriteLine("----- Vector chain -----");
+
+            Predictor.DisplayCircleData(ringCenters);
+        }
+
 
         Console.WriteLine("end");
         return 0;
