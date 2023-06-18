@@ -9,7 +9,8 @@ static class MainClass
 
         Console.WriteLine("start");
 
-        //DataSource.CaptureDropData();
+        // DataSource.CaptureDropData();
+        // DataSource.CaptureZoneData();
 
         // Bitmap basemap = DataSource.FormBase();
         // basemap.Save("basemap.png", ImageFormat.Png);
@@ -21,7 +22,7 @@ static class MainClass
 
 
         //Bitmap edgemap = DataSource.FormEdgemap(new Bitmap("ZoneData_0_0.png"), new Bitmap("basemap.png"));
-        List<Point> ringCenters = DataSource.GetRingCenters(0);
+        List<Point> ringCenters = DataSource.GetRingCenters(1);
         int i = 0;
         foreach (Point ringCenter in ringCenters)
         {

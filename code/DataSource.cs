@@ -23,7 +23,7 @@ static class DataSource
     private const int iterations = 25;
     
 
-    public static Bitmap CaptureMap()
+    private static Bitmap CaptureMap()
     {
 
         Bitmap bitmap = new Bitmap(mapResolution.Width, mapResolution.Height);

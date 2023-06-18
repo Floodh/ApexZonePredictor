@@ -1,0 +1,20 @@
+
+
+
+Unconfirmed:
+    -   The final zone pull will pull in the oposite direction of the first(or the second???) zone pull.
+        Unless its a counter pull, in which case it will probaly pull in the same direction.
+    -   Unknown if building with OOB timmers counts towards invalid play area.
+
+Confirmed:
+
+    -   If the zone is pulling towards an invalid location. Its a garanteed counter pull.
+        50% of the zone needs to be playable and the final zone will need to adjust to banned zones data.
+        
+    -   People don't know that much about the zone. The only thing that seems to be common knowledge is:
+            1:  Zone generly keeps pulling in the same direction.
+            2:  Similar zones will have similar zone pulls.
+            3:  The Datamined stuff to rule out certain zones.
+        There are also some misconceptions:
+            1:  You can't predict the final zone from the first ring.
+            2:  "I have had this zone before", no you did not, you just had a zone that ended on almost exactly the same spot. Which is good enough, but still.
