@@ -6,7 +6,7 @@ static class DataSource
 
     private static readonly Size resolution = new Size(2560, 1440);
     public static readonly Size mapResolution = new Size(1912 - 560, 1352 - 0);
-    private static readonly Rectangle mapBounds = new Rectangle(0, 0, mapResolution.Width, mapResolution.Height);
+    public static readonly Rectangle mapBounds = new Rectangle(0, 0, mapResolution.Width, mapResolution.Height);
     //  560     0               1912    0
 
     //  560     1352            1912    1352

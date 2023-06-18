@@ -8,33 +8,40 @@ readonly struct VecPoint
     public readonly int Y{get { return value.Y; }}
 
     public readonly double Length{get{return Math.Sqrt((double)(X * X + Y * Y));}}
+    public readonly double LengthSquared{get{return (double)(X * X + Y * Y);}}
+
+    //  is this wrong?
     public readonly double Direction{get{return Math.Atan2(Y, X);}}
 
 
-    VecPoint(double x, double y)
+    public VecPoint(double x, double y)
         : this((int)x, (int)y)
     {}
 
-    VecPoint(int x, int y)
+    public VecPoint(int x, int y)
         : this(new Point(x, y))
     {}
 
-    VecPoint(Point point)
+    public VecPoint(Point point)        //  primary
     {
         this.value = point;
     }
 
+    public VecPoint(Point from, Point to)
+        : this(to.X - from.X, to.Y - from.Y)
+    {}
+
+
+    //  why did i add this???????
+    //  makes no sense since int values are stored rather than floats
     public VecPoint Normalize()
     {
-
-
         float ls = value.X * value.X + value.Y * value.Y;
         float invNorm = 1.0f / (float)Math.Sqrt((double)ls);
 
         return new VecPoint(
             value.X * invNorm,
             value.Y * invNorm);
-        
     }
 
 
@@ -53,6 +60,11 @@ readonly struct VecPoint
     public VecPoint Offset(VecPoint point)
     {
         return this + point;
+    }
+
+    public override string ToString()
+    {
+        return this.value.ToString();
     }
 
 
