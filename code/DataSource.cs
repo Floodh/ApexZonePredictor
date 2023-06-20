@@ -320,4 +320,82 @@ static class DataSource
 
     }
 
+
+    public static Circle[] LoadInvalidZoneData()
+    {
+        List<Circle> zones = new List<Circle>();
+
+        string htmlText = File.ReadAllText("InvalidZones_html");
+
+        int startIndex = htmlText.IndexOf("[");
+        int endIndex = htmlText.IndexOf("]");
+        int length = endIndex - startIndex;
+
+        string rawData = htmlText.Substring(startIndex + 1, length - 1);
+
+        string[] elements = rawData.Split(",{");
+        foreach (string element in elements)
+        {
+
+            Circle circle = new Circle();
+
+            bool buildAlias = false;
+            string aliasStr = "";
+            bool buildValue = false;
+            string valueStr = "";
+
+            foreach (char c in element)
+            {
+                if (buildAlias)
+                {
+                    if (c == '"')
+                    {
+                        buildAlias = false;
+                    }
+                    else 
+                    {
+                        aliasStr += c;
+                    }
+
+                }
+                else if (buildValue)
+                {
+                    if (c == ',' || c == '}')
+                    {
+                        circle = circle.AdjustToElement(aliasStr, valueStr);
+                        buildValue = false;
+                        aliasStr = "";
+                        valueStr = "";
+
+                    }
+                    else
+                    {
+                        valueStr += c;
+                    }
+                    
+
+                }
+                else 
+                {
+                    if (c == '"')
+                    {
+                        buildAlias = true;
+                    }
+                    else if (c == ':')
+                        buildValue = true;
+
+                }
+
+
+
+            }
+
+            zones.Add(circle);
+
+        }
+
+        return zones.ToArray();
+
+    }
+
 }

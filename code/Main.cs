@@ -12,8 +12,8 @@ static class MainClass
         // DataSource.CaptureDropData();
         // DataSource.CaptureZoneData();
 
-        // Bitmap basemap = DataSource.FormBase();
-        // basemap.Save("basemap.png", ImageFormat.Png);
+        Bitmap basemap = DataSource.FormBase();
+        basemap.Save("basemap.png", ImageFormat.Png);
 
         // Bitmap edgemap = DataSource.FormEdgemap(new Bitmap("ZoneData_1_0.png"), new Bitmap("basemap.png"));
         // Point crossCenter = DataSource.GetRingCenter(edgemap, new Point(edgemap.Width / 2, edgemap.Height / 2));
@@ -44,6 +44,12 @@ static class MainClass
             Console.WriteLine("----- Vector chain -----");
 
             Predictor.DisplayCircleData(ringCenters);
+
+            Circle[] invlaidZones = DataSource.LoadInvalidZoneData();
+            foreach (Circle invalidZone in invlaidZones)
+            {
+                Console.WriteLine(invalidZone);
+            }
         }
 
 
