@@ -3,22 +3,33 @@ using System.Drawing;
 //  this will be needed later for the ban location data
 readonly struct Circle
 {
-    readonly Point position = Point.Empty;
-    readonly double radius = 0.0;
+    public readonly double x = 0;
+    public readonly double y = 0;
+    public readonly double radius {get; init;} = 0.0;
+    public readonly int X {get {return (int)x;}}
+    public readonly int Y {get {return (int)y;}}
+    public readonly Point Location { get {return new Point(X, Y);}}
+
+    public Circle(Point position, double radius)
+        : this(position.X, position.Y, radius) 
+    {}
 
     public Circle(int x, int y, double radius)
-        : this(new Point(x, y), radius)
+        : this((double)x, (double)y, radius)
     {}
     
-    public Circle(Point position, double radius)
+    public Circle(double x, double y, double radius)
     {
-        this.position = position;
+        this.x = x;
+        this.y = y;
         this.radius = radius;
     }
+
+
     public bool Contains(Point position)
     {
-        int dx = this.position.X - position.X;
-        int dy = this.position.Y - position.Y;
+        int dx = this.X - position.X;
+        int dy = this.Y - position.Y;
         return ((double)(dx * dx + dy * dy) < this.radius * this.radius);
     }
     public Circle AdjustToElement(string variableName, string valueStr)
@@ -28,16 +39,16 @@ readonly struct Circle
 
         if (variableName == "radius")
         {
-            return new Circle(this.position, value);
+            return new Circle(this.Location, value);
         }
         else if (variableName == "x")
         {
-            return new Circle(value, this.position.Y, radius);
+            return new Circle(value, this.Y, radius);
 
         }
         else if (variableName == "y")
         {
-            return new Circle(this.position.X, value, radius);
+            return new Circle(this.X, value, double.Parse(valueStr));
         }
         else
         {
@@ -47,8 +58,32 @@ readonly struct Circle
 
     }
 
+    public Circle Offset(double x, double y)
+    {
+        return new Circle(this.x + x, this.y + y, this.radius);
+    }
+    public Circle Offset(int x, int y)
+    {
+        return new Circle(this.x + x, this.y + y, this.radius);
+    }
+    public Circle Offset(Point position)
+    {
+        return Offset(position.X, position.Y);
+    }
+
     public override string ToString()
     {
-        return $"x : {this.position.X}, y : {this.position.Y}, r : {this.radius}";
+        return $"x : {this.X}, y : {this.Y}, r : {this.radius}";
     }
+
+    //  is this really correct?
+    public static Circle operator/(Circle c, int divider)
+    {
+        return new Circle(c.X / divider, c.Y / divider, c.radius / divider);
+    }
+    public static Circle operator*(Circle c, double multipler)
+    {
+        return new Circle(c.x * multipler, c.y * multipler, c.radius * multipler);
+    }
+
 }

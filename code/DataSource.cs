@@ -20,6 +20,8 @@ static class DataSource
 
     private static readonly float[] we_ringPullMultipler = new float[6] {0.0025f, 0.0025f, 0.0025f, 0.0025f, 0.0055f, 0.0155f};
 
+
+    private static readonly Circle we_base_firstInvalidCircle = new Circle(808, 800, 10.77);    //  the radius here is not accurate, but it gives better results for some reason.
     private const int iterations = 25;
     
 
@@ -395,6 +397,57 @@ static class DataSource
         }
 
         return zones.ToArray();
+
+    }
+
+    public static Circle[] ConvertInvalidZoneData(Circle[] zones)
+    {
+
+
+
+        Circle[] result = new Circle[zones.Length];
+
+        double dradius = zones[0].radius - we_base_firstInvalidCircle.radius;
+
+        double radiusMultipler = we_base_firstInvalidCircle.radius / zones[0].radius;
+
+        Circle decreasedCircle = zones[0] * radiusMultipler; 
+
+        double dx = we_base_firstInvalidCircle.X - decreasedCircle.X;
+        double dy = we_base_firstInvalidCircle.Y - decreasedCircle.Y;
+
+        Console.WriteLine($"radiusMultipler : {radiusMultipler}, offset after decrement : {dx}, {dy}");
+
+        int count = 0;
+        foreach (Circle zone in zones)
+        {
+            result[count] = zone * radiusMultipler;
+            result[count] = result[count].Offset(dx, dy);
+            count++;
+        }
+
+        return result;
+    }
+
+    public static void DrawCircles(Bitmap canvas, Circle[] circles)
+    {
+        Pen pen = new Pen(Color.Red);
+        Graphics formGraphics = Graphics.FromImage(canvas);
+        
+       
+        foreach (Circle circle in circles)
+        {
+            int x,y,w,h;
+            x = circle.X - (int)(circle.radius);
+            y = circle.Y - (int)(circle.radius);
+            w = (int)(circle.radius);
+            h = w;
+
+            formGraphics.DrawEllipse(pen, new Rectangle(x, y, w, h));
+        }
+
+        pen.Dispose();
+        formGraphics.Dispose();
 
     }
 
