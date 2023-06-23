@@ -18,3 +18,13 @@ Confirmed:
         There are also some misconceptions:
             1:  You can't predict the final zone from the first ring.
             2:  "I have had this zone before", no you did not, you just had a zone that ended on almost exactly the same spot. Which is good enough, but still.
+
+
+
+
+Sauce:
+
+    https://apexlegendsstatus.com/interactive-map/mp_rr_desertlands_mu4
+    https://final-ring-viewer.netlify.app/
+    https://github.com/ccamfpsApex/ApexLegendsGuide/wiki/Endzone-&-Ring-Prediction
+    https://apexpredicter.martinmunoz.repl.co/

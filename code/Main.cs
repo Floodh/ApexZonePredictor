@@ -22,7 +22,7 @@ static class MainClass
 
 
         //Bitmap edgemap = DataSource.FormEdgemap(new Bitmap("ZoneData_0_0.png"), new Bitmap("basemap.png"));
-        List<Point> ringCenters = DataSource.GetRingCenters(1);
+        List<Point> ringCenters = DataSource.GetRingCenters(5);
         int i = 0;
         foreach (Point ringCenter in ringCenters)
         {

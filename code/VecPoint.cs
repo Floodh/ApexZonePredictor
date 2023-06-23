@@ -85,6 +85,10 @@ readonly struct VecPoint
         return new VecPoint(p.X / divide, p.Y / divide);
     }
 
+    public static int Dot(VecPoint value1, VecPoint value2)
+    {
+        return value1.X * value2.X + value1.Y * value2.Y;
+    }
 
     public static VecPoint FromDirectionAndLength(double length, double direction)
     {
@@ -92,8 +96,48 @@ readonly struct VecPoint
 
     }
 
-    
-    
+    //  return points on line AB closest to P
+    public static VecPoint GetClosestPoint(VecPoint A, VecPoint B, VecPoint P)
+    {
+        PointF pt = new PointF(P.X, P.Y); 
+        PointF p1 = new PointF(A.X, A.Y); 
+        PointF p2 = new PointF(B.X, B.Y);
+        PointF result;
 
+        float dx = p2.X - p1.X;
+        float dy = p2.Y - p1.Y;
+        if ((dx == 0) && (dy == 0))
+        {
+            throw new Exception("Not a line segment");
+        }
 
+        // Calculate the t that minimizes the distance.
+        float t = ((pt.X - p1.X) * dx + (pt.Y - p1.Y) * dy) /
+            (dx * dx + dy * dy);
+
+        // See if this represents one of the segment's
+        // end points or a point in the middle.
+        if (t < 0)
+        {
+            result = new PointF(p1.X, p1.Y);
+            dx = pt.X - p1.X;
+            dy = pt.Y - p1.Y;
+        }
+        else if (t > 1)
+        {
+            result = new PointF(p2.X, p2.Y);
+            dx = pt.X - p2.X;
+            dy = pt.Y - p2.Y;
+        }
+        else
+        {
+            result = new PointF(p1.X + t * dx, p1.Y + t * dy);
+            dx = pt.X - result.X;
+            dy = pt.Y - result.Y;
+        }
+        
+
+        return new VecPoint(result.X, result.Y);
+    }
+    
 }
