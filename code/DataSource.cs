@@ -206,14 +206,14 @@ static class DataSource
 
     
     
-    public static Point GetRingCenter(Bitmap edgemap, Point start, int ring)
+    public static VecPoint GetRingCenter(Bitmap edgemap, VecPoint start, int ring)
     {
 
 
-        Point center = start;
-        Point[] moveArray = new Point[8]{
-            new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1),
-            new Point(1, 1), new Point(-1, -1), new Point(-1, 1), new Point(1, -1)
+        VecPoint center = start;
+        VecPoint[] moveArray = new VecPoint[8]{
+            new VecPoint(1, 0), new VecPoint(-1, 0), new VecPoint(0, 1), new VecPoint(0, -1),
+            new VecPoint(1, 1), new VecPoint(-1, -1), new VecPoint(-1, 1), new VecPoint(1, -1)
             };
         int radius = (int)we_ringRadius[ring];  
 
@@ -222,20 +222,20 @@ static class DataSource
         {
             
 
-            Point pullPoint = Point.Empty;
-            foreach (Point offsetPoint in moveArray)
+            VecPoint pullPoint = VecPoint.Empty;
+            foreach (VecPoint offsetPoint in moveArray)
             {
 
                 //  point closests to the radius
-                Point edge = center;
+                VecPoint edge = center;
                 double distance = 0.0;
 
-                Point walkPoint = center;
+                VecPoint walkPoint = center;
 
                 while (true)
                 {
-                    walkPoint.Offset(offsetPoint);
-                    if (!mapBounds.Contains(walkPoint))
+                    walkPoint = walkPoint.Offset(offsetPoint);
+                    if (!mapBounds.Contains(walkPoint.value))
                         break;
                     
                     Color pixel = edgemap.GetPixel(walkPoint.X, walkPoint.Y);
@@ -257,14 +257,14 @@ static class DataSource
                 }
 
                 //  just add the point immediately, we will get the avg later
-                pullPoint = new Point(pullPoint.X + edge.X, pullPoint.Y + edge.Y);
+                pullPoint = new VecPoint(pullPoint.X + edge.X, pullPoint.Y + edge.Y);
 
             }
 
 
 
 
-            pullPoint = new Point(
+            pullPoint = new VecPoint(
                 pullPoint.X / moveArray.Length, 
                 pullPoint.Y / moveArray.Length);
             center = pullPoint;
@@ -275,17 +275,16 @@ static class DataSource
 
     }
 
-    public static List<Point> GetRingCenters(int gameId)
+    public static List<VecPoint> GetRingCenters(int gameId)
     {
 
-        List<Point> result = new List<Point>();
-        Point center = new Point(mapResolution.Width / 2, mapResolution.Height / 2);
+        List<VecPoint> result = new List<VecPoint>();
+        VecPoint center = new VecPoint(mapResolution.Width / 2, mapResolution.Height / 2);
         for (int i = 0; i < 5; i++)
         {
             if (!File.Exists($"ZoneData_{gameId}_{i}.png"))
                 break;
             Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap($"ZoneData_{gameId}_{i}.png"), new Bitmap("basemap.png"));
-            edgemap.Save($"testmap{i}.png", ImageFormat.Png);
             center = GetRingCenter(edgemap, center, i + 1);
             Console.WriteLine(center);
             result.Add(center);

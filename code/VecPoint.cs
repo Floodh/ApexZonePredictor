@@ -1,4 +1,6 @@
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Numerics;
 
 readonly struct VecPoint
 {
@@ -13,6 +15,7 @@ readonly struct VecPoint
     //  is this wrong?
     public readonly double Direction{get{return Math.Atan2(Y, X);}}
 
+    private const double stepSize = 0.32;
 
     public VecPoint(double x, double y)
         : this((int)x, (int)y)
@@ -47,11 +50,11 @@ readonly struct VecPoint
 
     public VecPoint Offset(double x, double y)
     {
-        return this + new VecPoint(X, y);
+        return this + new VecPoint(x, y);
     }
     public VecPoint Offset(int x, int y)
     {
-        return this + new VecPoint(X, y);
+        return this + new VecPoint(x, y);
     }
     public VecPoint Offset(Point point)
     {
@@ -139,5 +142,62 @@ readonly struct VecPoint
 
         return new VecPoint(result.X, result.Y);
     }
+
+    public static void DrawVector(Bitmap canvas, VecPoint start, VecPoint end, Color color)
+    {
+
+
+
+        VecPoint vector = end - start;
+        
+
+        VecPoint vecPoint = new VecPoint(vector.value);
+        Vector2 v2Start = new Vector2(start.X, start.Y);
+        Vector2 v2End = new Vector2(end.X, end.Y);
+        Vector2.Lerp(v2Start, v2End, 0.0f);
+
+        VecPoint walkPoint = start;
+
+        double traveledDistance = 0.0;
+
+        while (traveledDistance * traveledDistance < vecPoint.LengthSquared)
+        {
+
+            if (DataSource.mapBounds.Contains(walkPoint.value))
+            {
+                canvas.SetPixel(walkPoint.X, walkPoint.Y, color);
+            }
+
+            traveledDistance += stepSize;
+            double progress = traveledDistance / vecPoint.Length;
+            Vector2 drawPoint = Vector2.Lerp(v2Start, v2End, (float)progress);
+            walkPoint = new VecPoint((int)drawPoint.X, (int)drawPoint.Y);
+
+        }
+
+ 
+
+        DrawSquare(canvas, start, color);
+        DrawSquare(canvas, end, color);
+               
+    }
+
+    private static void DrawSquare(Bitmap canvas, VecPoint center, Color color)
+    {
+        for (int y = 0; y < 5; y++)
+        for (int x = 0; x < 5; x++)
+        {
+
+            VecPoint drawPoint = center;
+            drawPoint = drawPoint.Offset(x - 2, y - 2);
+            if (DataSource.mapBounds.Contains(drawPoint.value))
+                canvas.SetPixel(drawPoint.X, drawPoint.Y, color);
+            else
+                Console.WriteLine("WARNING, drawPoint is outside of the map");
     
+        }            
+    }
+
+    public static readonly VecPoint Empty = new VecPoint(0, 0);
+
 }

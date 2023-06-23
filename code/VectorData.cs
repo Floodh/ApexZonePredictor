@@ -30,13 +30,16 @@ class VectorData
     //  combined vectors
         VecPoint vec_seedPull;          //  todo
     //  tangent method / LinBoBo methods
-        VecPoint A, B, C, D, E, F, G;
+        VecPoint A, B, C, D, E, F, G, J, I;        //  skipping H since its useless anyway
 
-        VecPoint vec_AtoC;  //  same as vec_centerToEdge    (for method 1, probaly different for the other version)
+        VecPoint vec_AtoC;  //  same as vec_centerToEdge
         VecPoint vec_BtoE;  
         VecPoint vec_BtoD;
         VecPoint vec_EtoF;  //  same as vec_AtoC
         VecPoint vec_FtoG;  //  the hard one
+        VecPoint vec_JtoI;
+
+        VecPoint vec_DtoJ;
 
     //
         private bool isSourced = false;
@@ -84,6 +87,8 @@ class VectorData
             vec_BtoD = vec_firstToSecond;
             vec_BtoE = vec_BtoD + vec_BtoD;
             vec_EtoF = vec_centerToEdge;
+            vec_DtoJ = new VecPoint() - vec_AtoC;
+           
             
 
 
@@ -96,7 +101,11 @@ class VectorData
             F = E + vec_EtoF;
 
             vec_FtoG = (VecPoint.GetClosestPoint(D, E, F) - F);
+            vec_FtoG = vec_FtoG + vec_FtoG;
+            vec_JtoI = new VecPoint() - vec_FtoG;
             G = F + vec_FtoG;
+            J = D + vec_DtoJ;
+            I = J + vec_JtoI;
 
             //vec_FtoG = G - F;
             //  todo, find G
@@ -112,23 +121,26 @@ class VectorData
 
 
         //  edge vector
-        Predictor.DrawVector(canvas, A, C, Color.Red);
+        VecPoint.DrawVector(canvas, A, C, Color.Red);
 
         //  base
-        Predictor.DrawVector(canvas, mapCenter, firstCircle, Color.Blue);
-        Predictor.DrawVector(canvas, firstCircle, secondCircle, Color.Blue);
+        VecPoint.DrawVector(canvas, mapCenter, firstCircle, Color.Blue);
+        VecPoint.DrawVector(canvas, firstCircle, secondCircle, Color.Blue);
         if (isSourced)
         {
-            Predictor.DrawVector(canvas, secondCircle, thirdCircle, Color.Blue);
-            Predictor.DrawVector(canvas, thirdCircle, fourthCircle, Color.Blue);
-            Predictor.DrawVector(canvas, fourthCircle, fifthCircle, Color.Blue);
+            VecPoint.DrawVector(canvas, secondCircle, thirdCircle, Color.Blue);
+            VecPoint.DrawVector(canvas, thirdCircle, fourthCircle, Color.Blue);
+            VecPoint.DrawVector(canvas, fourthCircle, fifthCircle, Color.Blue);
         }
 
         //  tangent method
         //Predictor.DrawVector(canvas, B, C, Color.Green);
-        Predictor.DrawVector(canvas, D, E, Color.Green);
-        Predictor.DrawVector(canvas, E, F, Color.Green);
-        Predictor.DrawVector(canvas, F, G, Color.Green);
+        VecPoint.DrawVector(canvas, D, E, Color.Green);
+        VecPoint.DrawVector(canvas, E, F, Color.Green);
+        VecPoint.DrawVector(canvas, F, G, Color.Green);
+        VecPoint.DrawVector(canvas, D, J, Color.Green);
+        VecPoint.DrawVector(canvas, F, J, Color.Green);
+        VecPoint.DrawVector(canvas, J, I, Color.Green);
 
     }
 

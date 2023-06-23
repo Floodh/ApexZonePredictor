@@ -3,6 +3,10 @@ using System.Drawing.Imaging;
 
 static class MainClass
 {
+
+    const int sampleSize = 7;
+
+
     static int Main(string[] args)
     {
 
@@ -15,52 +19,34 @@ static class MainClass
         // Bitmap basemap = DataSource.FormBase();
         // basemap.Save("basemap.png", ImageFormat.Png);
 
-        // // Bitmap edgemap = DataSource.FormEdgemap(new Bitmap("ZoneData_1_0.png"), new Bitmap("basemap.png"));
-        // // Point crossCenter = DataSource.GetRingCenter(edgemap, new Point(edgemap.Width / 2, edgemap.Height / 2));
-        // // DataSource.DrawCross(edgemap, crossCenter);
-        // // edgemap.Save("crossmap.png", ImageFormat.Png);
-
-
-        //Bitmap edgemap = DataSource.FormEdgemap(new Bitmap("ZoneData_0_0.png"), new Bitmap("basemap.png"));
-        List<Point> ringCenters = DataSource.GetRingCenters(5);
-        int i = 0;
-        foreach (Point ringCenter in ringCenters)
+        for (int sample = 0; sample < sampleSize; sample++)
         {
-            //Console.WriteLine($"i = {i}");
-            Bitmap canvas = new Bitmap($"testmap{i}.png");
-            DataSource.DrawCross(canvas, ringCenter);
-            canvas.Save($"crossmap_{i}.png", ImageFormat.Png);
-            i++;
-        }
+
+            List<VecPoint> ringCenters = DataSource.GetRingCenters(sample);
+            int i = 0;
+            foreach (VecPoint ringCenter in ringCenters)
+            {
+                //Console.WriteLine($"i = {i}");
+                Bitmap canvas = new Bitmap($"testmap{i}.png");
+                DataSource.DrawCross(canvas, ringCenter.value);
+                canvas.Save($"crossmap_{i}.png", ImageFormat.Png);
+                i++;
+            }
 
 
-        Console.WriteLine("----- Prediction -----");
-        {
-            Point finalZone = Predictor.PredictFinalZone(ringCenters[0], ringCenters[1]);
-            Bitmap canvas = new Bitmap($"testmap4.png");
-            DataSource.DrawCross(canvas, finalZone);
-            canvas.Save($"FinalZonePrediction.png", ImageFormat.Png);
+            Console.WriteLine("----- Prediction -----");
+            {
 
-            Console.WriteLine("----- Vector chain -----");
+                Bitmap canvas = new Bitmap($"basemap.png");
+                Console.WriteLine("----- Vector chain -----");
 
-            Predictor.DisplayCircleData(ringCenters);
+                VectorData vecData = new VectorData(ringCenters.ToArray());
+                vecData.Draw(canvas);
+                canvas.Save($"Vectors{sample}.png", ImageFormat.Png);
+
+            }
 
         }
-
-        // {
-
-        //     Circle[] invlaidZones = DataSource.LoadInvalidZoneData();
-        //     invlaidZones = DataSource.ConvertInvalidZoneData(invlaidZones);
-            
-        //     foreach (Circle invalidZone in invlaidZones)
-        //     {
-        //         Console.WriteLine(invalidZone);
-        //     }
-
-        //     Bitmap canvas = new Bitmap("Vectors.png");
-        //     DataSource.DrawCircles(canvas, invlaidZones);
-        //     canvas.Save("InvalidZones_Converted.png", ImageFormat.Png);
-        // }
 
 
         Console.WriteLine("end");
