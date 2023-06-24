@@ -9,40 +9,39 @@ class VectorData
 {
 
     //  circles
-        VecPoint mapCenter;
-        VecPoint firstCircle;  
-        VecPoint secondCircle; 
-        VecPoint thirdCircle;           //  unknown
-        VecPoint fourthCircle;          //  unknown
-        VecPoint fifthCircle;           //  unknown
+        public VecPoint mapCenter;
+        public VecPoint firstCircle;  
+        public VecPoint secondCircle; 
+        public VecPoint thirdCircle;           //  unknown
+        public VecPoint fourthCircle;          //  unknown
+        public VecPoint fifthCircle;           //  unknown
         
 
     
     //  base vectors
-        VecPoint vec_centerToFirst;
-        VecPoint vec_firstToSecond;
-        VecPoint vec_secondToThird;     //  unknown
-        VecPoint vec_thirdToFourth;     //  unknown
-        VecPoint vec_fourthToFinal;     //  unknown, the thing we wan't to find out
+        public VecPoint vec_centerToFirst;
+        public VecPoint vec_firstToSecond;
+        public VecPoint vec_secondToThird;     //  unknown
+        public VecPoint vec_thirdToFourth;     //  unknown
+        public VecPoint vec_fourthToFinal;     //  unknown, the thing we wan't to find out
     //  calculated vectors
-        VecPoint vec_centerToEdge;
-        VecPoint vec_firstToSecond_mid; //  todo
+        public VecPoint vec_centerToEdge;
+        public VecPoint vec_firstToSecond_mid; //  todo
     //  combined vectors
-        VecPoint vec_seedPull;          //  todo
+        public VecPoint vec_seedPull;          //  todo
     //  tangent method / LinBoBo methods
-        VecPoint A, B, C, D, E, F, G, J, I;        //  skipping H since its useless anyway
+        public VecPoint A, B, C, D, E, F, G, J, I;        //  skipping H since its useless anyway
 
-        VecPoint vec_AtoC;  //  same as vec_centerToEdge
-        VecPoint vec_BtoE;  
-        VecPoint vec_BtoD;
-        VecPoint vec_EtoF;  //  same as vec_AtoC
-        VecPoint vec_FtoG;  //  the hard one
-        VecPoint vec_JtoI;
-
-        VecPoint vec_DtoJ;
+        public VecPoint vec_AtoC;  //  same as vec_centerToEdge
+        public VecPoint vec_BtoE;  
+        public VecPoint vec_BtoD;
+        public VecPoint vec_EtoF;  //  same as vec_AtoC
+        public VecPoint vec_FtoG;  //  the hard one
+        public VecPoint vec_JtoI;
+        public VecPoint vec_DtoJ;
 
     //
-        private bool isSourced = false;
+        public bool isSourced = false;
 
 
     //  when loading from a source where everything is known
@@ -64,6 +63,10 @@ class VectorData
 
 
     }
+
+    public VectorData(Point firstCircle, Point secondCircle)
+        : this(new VecPoint(firstCircle), new VecPoint(secondCircle))
+    {}
 
     //  for predictions
     public VectorData(VecPoint firstCircle, VecPoint secondCircle)
@@ -106,10 +109,6 @@ class VectorData
             G = F + vec_FtoG;
             J = D + vec_DtoJ;
             I = J + vec_JtoI;
-
-            //vec_FtoG = G - F;
-            //  todo, find G
-
     }
 
     public void Draw(Bitmap canvas)

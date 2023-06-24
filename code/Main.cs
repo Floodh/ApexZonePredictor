@@ -46,6 +46,14 @@ static class MainClass
 
             }
 
+            Console.WriteLine("----- Heatmap -----");
+            {
+                Bitmap heatmap =  Predictor.GetHeatmap(ringCenters[0], ringCenters[1]);
+                heatmap.Save($"heatmap_{sample}.png", ImageFormat.Png);
+
+            }
+
+
         }
 
 

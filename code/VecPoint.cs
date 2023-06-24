@@ -34,20 +34,6 @@ readonly struct VecPoint
         : this(to.X - from.X, to.Y - from.Y)
     {}
 
-
-    //  why did i add this???????
-    //  makes no sense since int values are stored rather than floats
-    public VecPoint Normalize()
-    {
-        float ls = value.X * value.X + value.Y * value.Y;
-        float invNorm = 1.0f / (float)Math.Sqrt((double)ls);
-
-        return new VecPoint(
-            value.X * invNorm,
-            value.Y * invNorm);
-    }
-
-
     public VecPoint Offset(double x, double y)
     {
         return this + new VecPoint(x, y);
