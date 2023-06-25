@@ -1,3 +1,5 @@
+#pragma warning disable CA1416
+
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -118,7 +120,7 @@ class InvalidSpace
     }
 
 
-    public void Combine(Bitmap canvas)
+    public void DrawCombined(Bitmap canvas)
     {
         for (int y = 0; y < canvas.Height; y++)
         for (int x = 0; x < canvas.Width; x++)

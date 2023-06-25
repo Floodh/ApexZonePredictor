@@ -1,3 +1,5 @@
+#pragma warning disable CA1416
+
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Numerics;

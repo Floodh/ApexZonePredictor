@@ -1,3 +1,5 @@
+#pragma warning disable CA1416
+
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -126,6 +128,10 @@ static class DataSource
     //  this base image can then be used to simplify other tasks
     public static Bitmap FormBase()
     {
+
+        if (File.Exists($"{DataSource.folder_Cache}Basemap.png"))
+            return new Bitmap($"{DataSource.folder_Cache}Basemap.png");
+        
 
         Bitmap baseMap = new Bitmap(mapResolution.Width, mapResolution.Height);
         Bitmap[] zoneData = new Bitmap[10];
@@ -302,7 +308,7 @@ static class DataSource
                 break;
             Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap($"{folder_ZoneData}ZoneData_{gameId}_{i}.png"), basemap);
             center = GetRingCenter(edgemap, center, i + 1);
-            Console.WriteLine(center);
+            //Console.WriteLine(center);
             result.Add(center);
 
         }
@@ -364,7 +370,7 @@ static class DataSource
             }
         }
 
-        result.Save($"{DataSource.folder_Fragments}SpaceCombined.png", ImageFormat.Png);     //  debug
+        result.Save($"{DataSource.folder_Fragments}OnlyBanned.png", ImageFormat.Png);     //  debug
         return result;
 
     }

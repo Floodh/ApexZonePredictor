@@ -1,3 +1,5 @@
+#pragma warning disable CA1416
+
 using System.Drawing;
 
 //  this will be needed later for the ban location data
