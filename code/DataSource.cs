@@ -322,110 +322,115 @@ static class DataSource
     }
 
 
-    public static Circle[] LoadInvalidZoneData()
-    {
-        List<Circle> zones = new List<Circle>();
+    // public static Circle[] LoadInvalidZoneData()
+    // {
+    //     List<Circle> zones = new List<Circle>();
 
-        string htmlText = File.ReadAllText("InvalidZones_html");
+    //     string htmlText = File.ReadAllText("InvalidZones_html");
 
-        int startIndex = htmlText.IndexOf("[");
-        int endIndex = htmlText.IndexOf("]");
-        int length = endIndex - startIndex;
+    //     int startIndex = htmlText.IndexOf("[");
+    //     int endIndex = htmlText.IndexOf("]");
+    //     int length = endIndex - startIndex;
 
-        string rawData = htmlText.Substring(startIndex + 1, length - 1);
+    //     string rawData = htmlText.Substring(startIndex + 1, length - 1);
 
-        string[] elements = rawData.Split(",{");
-        foreach (string element in elements)
-        {
+    //     string[] elements = rawData.Split(",{");
+    //     foreach (string element in elements)
+    //     {
 
-            Circle circle = new Circle();
+    //         Circle circle = new Circle();
 
-            bool buildAlias = false;
-            string aliasStr = "";
-            bool buildValue = false;
-            string valueStr = "";
+    //         bool buildAlias = false;
+    //         string aliasStr = "";
+    //         bool buildValue = false;
+    //         string valueStr = "";
 
-            foreach (char c in element)
-            {
-                if (buildAlias)
-                {
-                    if (c == '"')
-                    {
-                        buildAlias = false;
-                    }
-                    else 
-                    {
-                        aliasStr += c;
-                    }
+    //         foreach (char c in element)
+    //         {
+    //             if (buildAlias)
+    //             {
+    //                 if (c == '"')
+    //                 {
+    //                     buildAlias = false;
+    //                 }
+    //                 else 
+    //                 {
+    //                     aliasStr += c;
+    //                 }
 
-                }
-                else if (buildValue)
-                {
-                    if (c == ',' || c == '}')
-                    {
-                        circle = circle.AdjustToElement(aliasStr, valueStr);
-                        buildValue = false;
-                        aliasStr = "";
-                        valueStr = "";
+    //             }
+    //             else if (buildValue)
+    //             {
+    //                 if (c == ',' || c == '}')
+    //                 {
+    //                     circle = circle.AdjustToElement(aliasStr, valueStr);
+    //                     buildValue = false;
+    //                     aliasStr = "";
+    //                     valueStr = "";
 
-                    }
-                    else
-                    {
-                        valueStr += c;
-                    }
+    //                 }
+    //                 else
+    //                 {
+    //                     valueStr += c;
+    //                 }
                     
 
-                }
-                else 
-                {
-                    if (c == '"')
-                    {
-                        buildAlias = true;
-                    }
-                    else if (c == ':')
-                        buildValue = true;
+    //             }
+    //             else 
+    //             {
+    //                 if (c == '"')
+    //                 {
+    //                     buildAlias = true;
+    //                 }
+    //                 else if (c == ':')
+    //                     buildValue = true;
 
-                }
+    //             }
 
 
 
-            }
+    //         }
 
-            zones.Add(circle);
+    //         zones.Add(circle);
 
-        }
+    //     }
 
-        return zones.ToArray();
+    //     return zones.ToArray();
 
-    }
+    // }
 
-    public static Circle[] ConvertInvalidZoneData(Circle[] zones)
+    public static Bitmap LoadInvalidZones()
     {
+        int x = 208, y = 208, width = 1231 - x, height = 1231 - y;
 
+        Bitmap invalidZonesMap_Data = new Bitmap("InvalidZones_Data.png");
+        Bitmap CroppedImage_Data = invalidZonesMap_Data.Clone(new Rectangle(x, y, width, height), invalidZonesMap_Data.PixelFormat);
+        Bitmap resized_data = new Bitmap(CroppedImage_Data, new Size(1352, 1352));
+           
+        Bitmap invalidZonesMap_Base = new Bitmap("InvalidZones_Base.png");
+        Bitmap CroppedImage_Base = invalidZonesMap_Base.Clone(new Rectangle(x, y, width, height), invalidZonesMap_Base.PixelFormat);
+        Bitmap resized_base = new Bitmap(CroppedImage_Base, new Size(1352, 1352));
 
+        Bitmap result = new Bitmap(mapResolution.Width, mapResolution.Height);
 
-        Circle[] result = new Circle[zones.Length];
-
-        double dradius = zones[0].radius - we_base_firstInvalidCircle.radius;
-
-        double radiusMultipler = we_base_firstInvalidCircle.radius / zones[0].radius;
-
-        Circle decreasedCircle = zones[0] * radiusMultipler; 
-
-        double dx = we_base_firstInvalidCircle.X - decreasedCircle.X;
-        double dy = we_base_firstInvalidCircle.Y - decreasedCircle.Y;
-
-        Console.WriteLine($"radiusMultipler : {radiusMultipler}, offset after decrement : {dx}, {dy}");
-
-        int count = 0;
-        foreach (Circle zone in zones)
+        for (y = 0; y < mapResolution.Height; y++)
+        for (x = 0; x < mapResolution.Width; x++)
         {
-            result[count] = zone * radiusMultipler;
-            result[count] = result[count].Offset(dx, dy);
-            count++;
-        }
+            
+            Color pixelData = resized_data.GetPixel(x, y);
+            Color pixelBase = resized_base.GetPixel(x, y);
+
+            // if (pixelBase != pixelData)
+            //     Console.WriteLine($"Pixels : {pixelBase}, {pixelData}");
+
+            if (pixelData.R - pixelBase.R > 5)
+            {
+                result.SetPixel(x, y, Color.Red);
+            }
+        }   
 
         return result;
+
     }
 
     public static void DrawCircles(Bitmap canvas, Circle[] circles)
