@@ -4,6 +4,19 @@ using System.Drawing.Imaging;
 static class DataSource
 {
 
+    public const string    folder_Cache        = "Cache/";
+    //public const string        file_Basemap        = "Basemap/";
+
+    public const string    folder_DataSource   = "DataSource/";
+    public const string        folder_DropData    = folder_DataSource + "DropData/";
+    public const string        folder_Space       = folder_DataSource + "Space/";
+    public const string        folder_ZoneData    = folder_DataSource + "ZoneData/";
+
+    public const string    folder_Fragments    = "Fragments/";
+
+
+
+
     private static readonly Size resolution = new Size(2560, 1440);
     public static readonly Size mapResolution = new Size(1912 - 560, 1352 - 0);
     public static readonly Rectangle mapBounds = new Rectangle(0, 0, mapResolution.Width, mapResolution.Height);
@@ -60,7 +73,7 @@ static class DataSource
                 break;
 
             map = DataSource.CaptureMap();
-            map.Save($"DropData_{gameCount}.png", ImageFormat.Png);
+            map.Save($"{folder_DropData}DropData_{gameCount}.png", ImageFormat.Png);
             gameCount++;
 
         }   
@@ -96,7 +109,7 @@ static class DataSource
                     break;
 
                 map = DataSource.CaptureMap();
-                map.Save($"ZoneData_{gameCount}_{zoneCount}.png", ImageFormat.Png);
+                map.Save($"{folder_ZoneData}ZoneData_{gameCount}_{zoneCount}.png", ImageFormat.Png);
 
                 zoneCount++;
 
@@ -121,7 +134,7 @@ static class DataSource
         for (int i = 0; i < 10; i++)
         {
 
-            string path = $"DropData_{i}.png";
+            string path = $"{folder_DropData}DropData_{i}.png";
             if (File.Exists(path))
             {
                 zoneData[i] = new Bitmap(path);
@@ -174,7 +187,7 @@ static class DataSource
             }
         }
 
-
+        baseMap.Save($"{folder_Cache}Basemap.png", ImageFormat.Png);
         return baseMap;
     }
 
@@ -199,7 +212,7 @@ static class DataSource
             }
         }
 
-        edgemap.Save($"EdgeMap.png", ImageFormat.Png);
+        edgemap.Save($"{folder_Fragments}Edgemap.png", ImageFormat.Png);  //  for debug
 
         return edgemap;
     }
@@ -275,16 +288,19 @@ static class DataSource
 
     }
 
-    public static List<VecPoint> GetRingCenters(int gameId)
+    public static List<VecPoint> GetRingCenters(int gameId, Bitmap basemap)
     {
 
         List<VecPoint> result = new List<VecPoint>();
         VecPoint center = new VecPoint(mapResolution.Width / 2, mapResolution.Height / 2);
+
+
+
         for (int i = 0; i < 5; i++)
         {
-            if (!File.Exists($"ZoneData_{gameId}_{i}.png"))
+            if (!File.Exists($"{folder_ZoneData}ZoneData_{gameId}_{i}.png"))
                 break;
-            Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap($"ZoneData_{gameId}_{i}.png"), new Bitmap("basemap.png"));
+            Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap($"{folder_ZoneData}ZoneData_{gameId}_{i}.png"), basemap);
             center = GetRingCenter(edgemap, center, i + 1);
             Console.WriteLine(center);
             result.Add(center);
@@ -321,95 +337,17 @@ static class DataSource
 
     }
 
-
-    // public static Circle[] LoadInvalidZoneData()
-    // {
-    //     List<Circle> zones = new List<Circle>();
-
-    //     string htmlText = File.ReadAllText("InvalidZones_html");
-
-    //     int startIndex = htmlText.IndexOf("[");
-    //     int endIndex = htmlText.IndexOf("]");
-    //     int length = endIndex - startIndex;
-
-    //     string rawData = htmlText.Substring(startIndex + 1, length - 1);
-
-    //     string[] elements = rawData.Split(",{");
-    //     foreach (string element in elements)
-    //     {
-
-    //         Circle circle = new Circle();
-
-    //         bool buildAlias = false;
-    //         string aliasStr = "";
-    //         bool buildValue = false;
-    //         string valueStr = "";
-
-    //         foreach (char c in element)
-    //         {
-    //             if (buildAlias)
-    //             {
-    //                 if (c == '"')
-    //                 {
-    //                     buildAlias = false;
-    //                 }
-    //                 else 
-    //                 {
-    //                     aliasStr += c;
-    //                 }
-
-    //             }
-    //             else if (buildValue)
-    //             {
-    //                 if (c == ',' || c == '}')
-    //                 {
-    //                     circle = circle.AdjustToElement(aliasStr, valueStr);
-    //                     buildValue = false;
-    //                     aliasStr = "";
-    //                     valueStr = "";
-
-    //                 }
-    //                 else
-    //                 {
-    //                     valueStr += c;
-    //                 }
-                    
-
-    //             }
-    //             else 
-    //             {
-    //                 if (c == '"')
-    //                 {
-    //                     buildAlias = true;
-    //                 }
-    //                 else if (c == ':')
-    //                     buildValue = true;
-
-    //             }
-
-
-
-    //         }
-
-    //         zones.Add(circle);
-
-    //     }
-
-    //     return zones.ToArray();
-
-    // }
-
     public static Bitmap LoadInvalidZones()
     {
         int x = 208, y = 208, width = 1231 - x, height = 1231 - y;
 
-        Bitmap invalidZonesMap_Data = new Bitmap("InvalidZones_Data.png");
-        Bitmap CroppedImage_Data = invalidZonesMap_Data.Clone(new Rectangle(x, y, width, height), invalidZonesMap_Data.PixelFormat);
-        Bitmap resized_data = new Bitmap(CroppedImage_Data, new Size(1352, 1352));
+        Bitmap bannedMap = new Bitmap($"{folder_Space}Banned.png");
+        Bitmap bannedMap_cropped = bannedMap.Clone(new Rectangle(x, y, width, height), bannedMap.PixelFormat);
+        Bitmap bannedMap_resized = new Bitmap(bannedMap_cropped, new Size(1352, 1352));
            
-        Bitmap invalidZonesMap_Base = new Bitmap("InvalidZones_Base.png");
-        Bitmap CroppedImage_Base = invalidZonesMap_Base.Clone(new Rectangle(x, y, width, height), invalidZonesMap_Base.PixelFormat);
-        Bitmap resized_base = new Bitmap(CroppedImage_Base, new Size(1352, 1352));
+        Bitmap baseMap = new Bitmap($"{folder_Space}Base.png");
+        Bitmap baseMap_cropped = baseMap.Clone(new Rectangle(x, y, width, height), baseMap.PixelFormat);
+        Bitmap baseMap_resized = new Bitmap(baseMap_cropped, new Size(1352, 1352));
 
         Bitmap result = new Bitmap(mapResolution.Width, mapResolution.Height);
 
@@ -417,18 +355,16 @@ static class DataSource
         for (x = 0; x < mapResolution.Width; x++)
         {
             
-            Color pixelData = resized_data.GetPixel(x, y);
-            Color pixelBase = resized_base.GetPixel(x, y);
-
-            // if (pixelBase != pixelData)
-            //     Console.WriteLine($"Pixels : {pixelBase}, {pixelData}");
+            Color pixelData = bannedMap_resized.GetPixel(x, y);
+            Color pixelBase = baseMap_resized.GetPixel(x, y);
 
             if (pixelData.R - pixelBase.R > 5)
             {
                 result.SetPixel(x, y, Color.Red);
             }
-        }   
+        }
 
+        result.Save($"{DataSource.folder_Fragments}SpaceCombined.png", ImageFormat.Png);     //  debug
         return result;
 
     }

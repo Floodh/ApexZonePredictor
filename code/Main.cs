@@ -16,55 +16,42 @@ static class MainClass
         // DataSource.CaptureDropData();
         // DataSource.CaptureZoneData();
 
-        // Bitmap basemap = DataSource.FormBase();
-        // basemap.Save("basemap.png", ImageFormat.Png);
+        Bitmap basemap = DataSource.FormBase();
+
+        for (int sample = 0; sample < sampleSize; sample++)
+        {
+
+            Console.WriteLine("----- Processing Data -----");
+
+            List<VecPoint> ringCenters = DataSource.GetRingCenters(sample, basemap);
+
+            Console.WriteLine("----- Vector chain -----");
+            {
+
+                Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+                VectorData vecData = new VectorData(ringCenters.ToArray());
+                vecData.Draw(canvas);
+                canvas.Save($"{DataSource.folder_Fragments}Vectors{sample}.png", ImageFormat.Png);
+
+            }
+
+            Console.WriteLine("----- Heatmap -----");
+            {
+                Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+                Predictor.DrawHeatmap(canvas, ringCenters[0], ringCenters[1]);
+                canvas.Save($"{DataSource.folder_Fragments}Heatmap_{sample}.png", ImageFormat.Png);
+            }
 
 
+        }
 
-
-        // for (int sample = 0; sample < sampleSize; sample++)
-        // {
-
-        //     List<VecPoint> ringCenters = DataSource.GetRingCenters(sample);
-        //     int i = 0;
-        //     foreach (VecPoint ringCenter in ringCenters)
-        //     {
-        //         //Console.WriteLine($"i = {i}");
-        //         Bitmap canvas = new Bitmap($"testmap{i}.png");
-        //         DataSource.DrawCross(canvas, ringCenter.value);
-        //         canvas.Save($"crossmap_{i}.png", ImageFormat.Png);
-        //         i++;
-        //     }
-
-
-        //     Console.WriteLine("----- Prediction -----");
-        //     {
-
-        //         Bitmap canvas = new Bitmap($"basemap.png");
-        //         Console.WriteLine("----- Vector chain -----");
-
-        //         VectorData vecData = new VectorData(ringCenters.ToArray());
-        //         vecData.Draw(canvas);
-        //         canvas.Save($"Vectors{sample}.png", ImageFormat.Png);
-
-        //     }
-
-        //     Console.WriteLine("----- Heatmap -----");
-        //     {
-        //         Bitmap heatmap =  Predictor.GetHeatmap(ringCenters[0], ringCenters[1]);
-        //         heatmap.Save($"heatmap_{sample}.png", ImageFormat.Png);
-
-        //     }
-
-
-        // }
-        
-        Bitmap bannedZones = DataSource.LoadInvalidZones();
-        bannedZones.Save("BannedZones.png", ImageFormat.Png);
-
-        InvalidSpace space = new InvalidSpace();
-        Bitmap combinedMap = space.Combine();
-        combinedMap.Save("Combined.png", ImageFormat.Png);
+        Console.WriteLine("----- Space ----");
+        {
+            Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+            InvalidSpace space = new InvalidSpace();
+            space.Combine(canvas);
+            canvas.Save($"{DataSource.folder_Cache}Space.png", ImageFormat.Png);
+        }
 
 
 

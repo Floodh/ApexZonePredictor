@@ -1,12 +1,3 @@
 bin
 obj
 .vscode
-basemap.png
-crossmap.png
-EdgeMap.png
-crossmap_*.png
-testmap*
-FinalZonePrediction.png
-Vectors.png
-InvalidZones_Converted.png
-heatmap_*.png

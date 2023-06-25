@@ -10,27 +10,23 @@ static class Predictor
 
 
 
-    public static Bitmap GetHeatmap(VecPoint firstCircle, VecPoint secondCircle)
+    public static void DrawHeatmap(Bitmap canvas, VecPoint firstCircle, VecPoint secondCircle)
     {
-        return GetHeatmap(new VectorData(firstCircle, secondCircle));
+        DrawHeatmap(canvas, new VectorData(firstCircle, secondCircle));
     }
 
-    public static Bitmap GetHeatmap(VectorData souce)
+    public static void DrawHeatmap(Bitmap canvas, VectorData souce)
     {
         if (souce.isSourced)
         {
             Console.WriteLine("Overideing souce!!!!");
         }
 
-        Bitmap canvas = new Bitmap("basemap.png");
-
         HeatLine(canvas, souce.G, souce.F);
         HeatLine(canvas, souce.J, souce.I);
 
         HeatLine(canvas, souce.F, souce.J); //  if angle >= 90
 
-
-        return canvas;
     }
 
 

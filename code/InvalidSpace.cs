@@ -7,17 +7,17 @@ class InvalidSpace
 {
 
 
-    const string hazardPath = "Unplayable_Hazard.png";
-    const string elevationPath = "Unplayable_Elevation.png";
-    const string partialOOBPath = "Unplayable_PartialOOB.png";
-    const string bannedPath = "BannedZones.png";
-
-
-    readonly Bitmap hazard;
-    static readonly Color hazardColor = Color.FromArgb(158, 28, 55);
+    
+    const string elevationPath = $"{DataSource.folder_Space}Space_Elevation.png";
+    const string hazardPath = $"{DataSource.folder_Space}Space_Hazard.png";
+    const string partialOOBPath = $"{DataSource.folder_Space}Space_PartialOOB.png";
+    //const string bannedPath = $"{DataSource.folder_Space}Banned.png";
 
     readonly Bitmap elevation;
     static readonly Color elevationColor = Color.FromArgb(48, 83, 183);
+
+    readonly Bitmap hazard;
+    static readonly Color hazardColor = Color.FromArgb(158, 28, 55);
 
     readonly Bitmap partialOOB;
     static readonly Color partialOOBColor = Color.FromArgb(85, 32, 115);
@@ -26,11 +26,11 @@ class InvalidSpace
     static readonly Color bannedColor = Color.FromArgb(Color.Red.R, Color.Red.G, Color.Red.B);
 
     public InvalidSpace()
-        : this(hazardPath, elevationPath, partialOOBPath, bannedPath)
+        : this(hazardPath, elevationPath, partialOOBPath, DataSource.LoadInvalidZones())
     {}
 
-    private InvalidSpace(string hazardPath, string elevationPath, string partialOOBPath, string bannedPath)
-        : this(new Bitmap(hazardPath), new Bitmap(elevationPath), new Bitmap(partialOOBPath), new Bitmap(bannedPath))
+    private InvalidSpace(string hazardPath, string elevationPath, string partialOOBPath, Bitmap banned)
+        : this(new Bitmap(hazardPath), new Bitmap(elevationPath), new Bitmap(partialOOBPath), banned)
     {}
 
     private InvalidSpace(Bitmap hazard, Bitmap elevation, Bitmap partialOOB, Bitmap banned)
@@ -118,11 +118,10 @@ class InvalidSpace
     }
 
 
-    public Bitmap Combine()
+    public void Combine(Bitmap canvas)
     {
-        Bitmap result = new Bitmap("basemap.png");
-        for (int y = 0; y < result.Height; y++)
-        for (int x = 0; x < result.Width; x++)
+        for (int y = 0; y < canvas.Height; y++)
+        for (int x = 0; x < canvas.Width; x++)
         {
             if (IsPlayable(x, y))
             {
@@ -132,16 +131,14 @@ class InvalidSpace
                 }
                 else
                 {
-                    result.SetPixel(x, y, Color.Red);
+                    canvas.SetPixel(x, y, Color.Red);
                 }
             }
             else
             {
-                result.SetPixel(x, y, Color.Blue);
+                canvas.SetPixel(x, y, Color.Blue);
             }
         }
-
-        return result;
 
     }
 
