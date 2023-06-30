@@ -107,6 +107,8 @@ class InvalidSpace
             return false;
         if (partialOOB.GetPixel(x, y) == partialOOBColor)
             return false;
+        if (IsCrowded(x, y))
+            return false;
 
         return true;
     }
@@ -173,7 +175,7 @@ class InvalidSpace
         if (!CanEnd(finalRing.X, finalRing.Y))
             return false;
 
-        return this.IsCrowded(finalRing.X, finalRing.Y);
+        return !this.IsCrowded(finalRing.X, finalRing.Y);
     }
 
 
@@ -186,7 +188,11 @@ class InvalidSpace
             {
                 if (CanEnd(x, y))
                 {
-                    continue;
+                    if (IsCrowded(x, y))
+                    {
+                        canvas.SetPixel(x, y, crowdedColor);
+
+                    }
                 }
                 else
                 {

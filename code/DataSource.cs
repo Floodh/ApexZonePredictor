@@ -223,29 +223,29 @@ static class DataSource
         return edgemap;
     }
 
-    // private static Bitmap FormEdgemap_RingConsole(Bitmap source, Bitmap basemap)
-    // {
-    //     Bitmap edgemap = basemap.Clone(new Rectangle(Point.Empty, mapResolution), basemap.PixelFormat);
+    private static Bitmap FormEdgemap_RingConsole(Bitmap source, Bitmap basemap)
+    {
+        Bitmap edgemap = basemap.Clone(new Rectangle(Point.Empty, mapResolution), basemap.PixelFormat);
         
-    //     for (int y = 0; y < source.Height; y++)
-    //     for (int x = 0; x < source.Width; x++)
-    //     {
-    //         Color sourceColor = source.GetPixel(x, y);
-    //         Color baseColor = basemap.GetPixel(x, y);
-    //         int diffR = sourceColor.R - baseColor.R;
-    //         int diffG = sourceColor.G - baseColor.G;
-    //         int diffB = sourceColor.B - baseColor.B;
-    //         if (diffR > edgeMargin & diffG > edgeMargin & diffB > edgeMargin)       //  THIS NEEDS TO BE DIFFERENT
-    //         {
-    //             edgemap.SetPixel(x, y, Color.Purple);
-    //         }
-    //     }
+        for (int y = 0; y < source.Height; y++)
+        for (int x = 0; x < source.Width; x++)
+        {
+            Color sourceColor = source.GetPixel(x, y);
+            Color baseColor = basemap.GetPixel(x, y);
+            int diffR = sourceColor.R - baseColor.R;
+            int diffG = sourceColor.G - baseColor.G;
+            int diffB = sourceColor.B - baseColor.B;
+            if (diffR > edgeMargin & diffG > edgeMargin & diffB > edgeMargin)       //  THIS NEEDS TO BE DIFFERENT
+            {
+                edgemap.SetPixel(x, y, Color.Purple);
+            }
+        }
 
-    //     edgemap.Save($"{folder_Fragments}Edgemap.png", ImageFormat.Png);  //  for debug
+        edgemap.Save($"{folder_Fragments}Edgemap.png", ImageFormat.Png);  //  for debug
 
-    //     return edgemap;        
+        return edgemap;        
 
-    // }
+    }
 
     
 
