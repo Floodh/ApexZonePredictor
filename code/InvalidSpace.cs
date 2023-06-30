@@ -13,6 +13,7 @@ class InvalidSpace
     const string elevationPath = $"{DataSource.folder_Space}Space_Elevation.png";
     const string hazardPath = $"{DataSource.folder_Space}Space_Hazard.png";
     const string partialOOBPath = $"{DataSource.folder_Space}Space_PartialOOB.png";
+    const string crowdedPath = $"{DataSource.folder_Space}Space_Crowded.png";
     //const string bannedPath = $"{DataSource.folder_Space}Banned.png";
 
     readonly Bitmap elevation;
@@ -26,6 +27,9 @@ class InvalidSpace
 
     readonly Bitmap banned;
     static readonly Color bannedColor = Color.FromArgb(Color.Red.R, Color.Red.G, Color.Red.B);
+
+    readonly Bitmap crowded;
+    static readonly Color crowdedColor = Color.FromArgb(Color.GreenYellow.R, Color.GreenYellow.G, Color.GreenYellow.B);
 
     public InvalidSpace()
         : this(hazardPath, elevationPath, partialOOBPath, DataSource.LoadInvalidZones())
@@ -41,6 +45,35 @@ class InvalidSpace
         this.elevation = elevation;
         this.partialOOB = partialOOB;
         this.banned = banned;
+
+        if (File.Exists(crowdedPath))
+        {
+            this.crowded = new Bitmap(crowdedPath);
+        }
+        else
+        {
+
+            this.crowded = new Bitmap(DataSource.mapResolution.Width, DataSource.mapResolution.Height);
+
+            for (int y = 0; y < DataSource.mapResolution.Width; y++)
+            {
+                Console.WriteLine($"    Y : {y} / {DataSource.mapResolution.Width - 1}");
+
+                for (int x = 0; x < DataSource.mapResolution.Height; x++)
+                {
+
+                    if (this.IsCrowded_Expensive(x, y))
+                    {
+                        this.crowded.SetPixel(x, y, crowdedColor);
+                    }
+
+                }
+
+            }
+
+            this.crowded.Save(crowdedPath, ImageFormat.Png);
+        }
+
     }
 
 
@@ -78,6 +111,58 @@ class InvalidSpace
         return true;
     }
 
+    public bool IsCrowded(int x, int y)
+    {
+        return this.crowded.GetPixel(x, y) == crowdedColor;
+    }
+
+    private bool IsCrowded_Expensive(int x, int y)
+    {
+
+        if (!CanEnd(x, y))  //  maybe chage this?
+            return false;
+                    
+        double radius = DataSource.we_ringRadius5;
+
+        Rectangle squareArea = new Rectangle((int)(x - radius), (int)(y - radius), (int)(radius * 2), (int)(radius * 2));
+        int validTiles = 0;
+        int inValidTiles = 0;
+
+
+        for (int yt = squareArea.Y; yt <= squareArea.Bottom; yt++)
+        for (int xt = squareArea.X; xt <= squareArea.Right; xt++)
+        {
+            if (
+                (xt >= 0 & xt < DataSource.mapResolution.Width)  &
+                (yt >= 0 & yt < DataSource.mapResolution.Height)
+            )
+            {
+                int dx = xt - x, dy = yt - y;
+
+                if (dx * dx + dy * dy <= radius * radius)
+                {
+                    if (IsPlayable(xt, yt))
+                    {
+                        validTiles++;
+                    }
+                    else
+                    {
+                        inValidTiles++;
+                    }
+
+                }
+            }
+            else
+            {
+                inValidTiles++;
+            }
+
+
+        }
+
+        return validTiles < inValidTiles;        
+    }
+
 
     //  checks if the final ring is valid.
     //      it will be valid if the center of the ring is not a banned endzone
@@ -88,35 +173,7 @@ class InvalidSpace
         if (!CanEnd(finalRing.X, finalRing.Y))
             return false;
 
-
-        Rectangle squareArea = new Rectangle((int)(finalRing.x - finalRing.radius), (int)(finalRing.y - finalRing.radius), (int)(finalRing.radius * 2), (int)(finalRing.radius * 2));
-
-        int validTiles = 0;
-        int inValidTiles = 0;
-
-
-        for (int y = squareArea.Y; y <= squareArea.Bottom; y++)
-        for (int x = squareArea.X; x <= squareArea.Right; x++)
-        {
-            int dx = x - finalRing.X, dy = y - finalRing.Y;
-
-            if (dx * dx + dy * dy <= finalRing.radius * finalRing.radius)
-            {
-                if (IsPlayable(x, y))
-                {
-                    validTiles++;
-                }
-                else
-                {
-                    inValidTiles++;
-                }
-
-            }
-
-
-        }
-
-        return validTiles > inValidTiles;
+        return this.IsCrowded(finalRing.X, finalRing.Y);
     }
 
 

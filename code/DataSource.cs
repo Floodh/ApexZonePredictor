@@ -26,11 +26,11 @@ static class DataSource
 
     //  560     1352            1912    1352
     public const double we_ringRadius0 = 100000;
-    public const double we_ringRadius1 = 10 + (1297.0 - 578.0) / 2;
-    public const double we_ringRadius2 = 10 + (1264.0 - 877.0) / 2;
-    public const double we_ringRadius3 = 10 + (1233.0 - 996.0) / 2;
-    public const double we_ringRadius4 = 10 + (1155.0 - 1038.0) / 2;
-    public const double we_ringRadius5 = 10 + (1112.0 - 1055.0) / 2;
+    public const double we_ringRadius1 = 2 + (1297.0 - 578.0) / 2;
+    public const double we_ringRadius2 = 2 + (1264.0 - 877.0) / 2;
+    public const double we_ringRadius3 = 2 + (1233.0 - 996.0) / 2;
+    public const double we_ringRadius4 = 2 + (1155.0 - 1038.0) / 2;
+    public const double we_ringRadius5 = 2 + (1112.0 - 1055.0) / 2;
     public static readonly double[] we_ringRadius = new double[] {we_ringRadius0, we_ringRadius1, we_ringRadius2, we_ringRadius3, we_ringRadius4, we_ringRadius5};
 
     private static readonly float[] we_ringPullMultipler = new float[6] {0.0025f, 0.0025f, 0.0025f, 0.0025f, 0.0055f, 0.0155f};
@@ -198,7 +198,7 @@ static class DataSource
     }
 
     private const int edgeMargin = 2;
-    public static Bitmap FormEdgemap(Bitmap source, Bitmap basemap)
+    private static Bitmap FormEdgemap(Bitmap source, Bitmap basemap)
     {
 
 
@@ -223,9 +223,34 @@ static class DataSource
         return edgemap;
     }
 
+    // private static Bitmap FormEdgemap_RingConsole(Bitmap source, Bitmap basemap)
+    // {
+    //     Bitmap edgemap = basemap.Clone(new Rectangle(Point.Empty, mapResolution), basemap.PixelFormat);
+        
+    //     for (int y = 0; y < source.Height; y++)
+    //     for (int x = 0; x < source.Width; x++)
+    //     {
+    //         Color sourceColor = source.GetPixel(x, y);
+    //         Color baseColor = basemap.GetPixel(x, y);
+    //         int diffR = sourceColor.R - baseColor.R;
+    //         int diffG = sourceColor.G - baseColor.G;
+    //         int diffB = sourceColor.B - baseColor.B;
+    //         if (diffR > edgeMargin & diffG > edgeMargin & diffB > edgeMargin)       //  THIS NEEDS TO BE DIFFERENT
+    //         {
+    //             edgemap.SetPixel(x, y, Color.Purple);
+    //         }
+    //     }
+
+    //     edgemap.Save($"{folder_Fragments}Edgemap.png", ImageFormat.Png);  //  for debug
+
+    //     return edgemap;        
+
+    // }
+
     
-    
-    public static VecPoint GetRingCenter(Bitmap edgemap, VecPoint start, int ring)
+
+    //  can find the centers of any circle as long as the edgemap is good enough
+    private static VecPoint GetRingCenter(Bitmap edgemap, VecPoint start, int ring)
     {
 
 
