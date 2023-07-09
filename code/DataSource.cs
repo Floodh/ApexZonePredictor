@@ -9,10 +9,11 @@ static class DataSource
     public const string    folder_Cache        = "Cache/";
     //public const string        file_Basemap        = "Basemap/";
 
-    public const string    folder_DataSource   = "DataSource/";
-    public const string        folder_DropData    = folder_DataSource + "DropData/";
-    public const string        folder_Space       = folder_DataSource + "Space/";
-    public const string        folder_ZoneData    = folder_DataSource + "ZoneData/";
+    public const string     folder_DataSource   = "DataSource/";
+    public const string         folder_DropData         = folder_DataSource + "DropData/";
+    public const string         folder_Space            = folder_DataSource + "Space/";
+    public const string         folder_ZoneData         = folder_DataSource + "ZoneData/";
+    public const string         folder_RingConsoleData  = folder_DataSource + "RingConsoleData/";
 
     public const string    folder_Fragments    = "Fragments/";
 
@@ -122,6 +123,32 @@ static class DataSource
         }    
     }
 
+    //  same as CaptureZoneData except that the result needs to be saved with a different directory and filename.
+    public static void CaptureRingConsoleData()
+    {  
+        Console.Write("Which game id to start from?(Enter a number): ");
+        int startFrom = int.Parse(Console.ReadLine());
+
+
+        Bitmap map = DataSource.CaptureMap();
+
+        string line;
+        int gameCount = startFrom;
+
+        while(true)
+        {
+            
+            Console.Write("Capture annother game? (y/n): ");
+            line = Console.ReadLine();
+            if (line != "y")
+                break;
+
+            map = DataSource.CaptureMap();
+            map.Save($"{folder_RingConsoleData}RingConsoleData_{gameCount}.png", ImageFormat.Png);
+            gameCount++;
+
+        }    
+    }
 
     //  based on the sample data
     //  generate a base image which is uneffected by replicators, rings or any other dynamic features
@@ -198,7 +225,7 @@ static class DataSource
     }
 
     private const int edgeMargin = 2;
-    private static Bitmap FormEdgemap(Bitmap source, Bitmap basemap)
+    public static Bitmap FormEdgemap(Bitmap source, Bitmap basemap)
     {
 
 
@@ -223,7 +250,8 @@ static class DataSource
         return edgemap;
     }
 
-    private static Bitmap FormEdgemap_RingConsole(Bitmap source, Bitmap basemap)
+    //  forms an edge map of the green circle
+    public static Bitmap FormEdgemap_RingConsole(Bitmap source, Bitmap basemap)
     {
         Bitmap edgemap = basemap.Clone(new Rectangle(Point.Empty, mapResolution), basemap.PixelFormat);
         
@@ -235,7 +263,7 @@ static class DataSource
             int diffR = sourceColor.R - baseColor.R;
             int diffG = sourceColor.G - baseColor.G;
             int diffB = sourceColor.B - baseColor.B;
-            if (diffR > edgeMargin & diffG > edgeMargin & diffB > edgeMargin)       //  THIS NEEDS TO BE DIFFERENT
+            if (diffR < 30 & diffG > edgeMargin + 12 & diffB < 25)       //  THIS NEEDS TO BE DIFFERENT
             {
                 edgemap.SetPixel(x, y, Color.Purple);
             }
@@ -250,7 +278,7 @@ static class DataSource
     
 
     //  can find the centers of any circle as long as the edgemap is good enough
-    private static VecPoint GetRingCenter(Bitmap edgemap, VecPoint start, int ring)
+    public static VecPoint GetRingCenter(Bitmap edgemap, VecPoint start, int ring)
     {
 
 
@@ -259,7 +287,7 @@ static class DataSource
             new VecPoint(1, 0), new VecPoint(-1, 0), new VecPoint(0, 1), new VecPoint(0, -1),
             new VecPoint(1, 1), new VecPoint(-1, -1), new VecPoint(-1, 1), new VecPoint(1, -1)
             };
-        int radius = (int)we_ringRadius[ring];  
+        int radius = (int)we_ringRadius[ring] + 6;  
 
 
         for (int i = 0; i < iterations; i++)
