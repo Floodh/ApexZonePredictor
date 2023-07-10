@@ -9,10 +9,12 @@ static class Activity
 
     public const string folder_Output = "Output/";
 
-    public static void ProcessRingConsoleData()
+
+    //  this function does no not work anymore
+    public static void ProcessRingConsoleData(string map, string setName)
     {
         Console.WriteLine("----- Forming base -----");
-        Bitmap basemap = DataSource.FormBase();
+        Bitmap basemap = DataSource.FormBase(map, setName);
 
 
         Console.WriteLine("----- Determining space ----");
@@ -61,14 +63,21 @@ static class Activity
     }
 
 
-    const int sampleSize = 7;
-
-    public static void ProcessTestData()
+    public static void ProcessTestData(string map, string setName)
     {
+
+        int sampleSize;
+        if (map == "WE")
+            sampleSize = 7;
+        else if (map == "SP")
+            sampleSize = 5;
+        else
+            throw new Exception($"Invalid map to process test data: {map}, needs to be SP or WE");
+
 
     
         Console.WriteLine("----- Forming base -----");
-        Bitmap basemap = DataSource.FormBase();
+        Bitmap basemap = DataSource.FormBase(map, setName);
 
 
         Console.WriteLine("----- Determining space ----");
@@ -83,13 +92,14 @@ static class Activity
         Console.WriteLine("----- Processing Data -----");
 
         for (int sample = 0; sample < sampleSize; sample++)
+            if (File.Exists($"{DataSource.folder_ZoneData}{map}/ZoneData_{sample}_{0}.{setName}.png"))
         {
 
             Console.WriteLine($"      {sample}");
 
             Console.WriteLine("      Searching for ring centers...");
 
-            List<VecPoint> ringCenters = DataSource.GetRingCenters(sample, basemap);
+            List<VecPoint> ringCenters = DataSource.GetRingCenters(map, setName, sample, basemap);
 
             Console.WriteLine("      Vector chain...");
             {
@@ -249,8 +259,6 @@ static class Activity
 
         }    
     }
-
-
 
 
     private static bool UserDecision(string message, string t, string f)

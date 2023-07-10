@@ -58,21 +58,23 @@ static class DataSource
     //  based on the sample data
     //  generate a base image which is uneffected by replicators, rings or any other dynamic features
     //  this base image can then be used to simplify other tasks
-    public static Bitmap FormBase()
+    public static Bitmap FormBase(string map, string setName)
     {
 
-        if (File.Exists($"{DataSource.folder_Cache}Basemap.png"))
-            return new Bitmap($"{DataSource.folder_Cache}Basemap.png");
+        string cachedBasemapPath = $"{DataSource.folder_Cache}{map}_Basemap.{setName}.png";
+
+        if (File.Exists(cachedBasemapPath))
+            return new Bitmap(cachedBasemapPath);
         
 
         Bitmap baseMap = new Bitmap(mapResolution.Width, mapResolution.Height);
         Bitmap[] zoneData = new Bitmap[10];
         int sampleSize = 0;
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)    //  will never need more than 10 bitmaps for a good enough basemap
         {
 
-            string path = $"{folder_DropData}DropData_{i}.png";
+            string path = $"{folder_DropData}{map}/DropData_{i}.{setName}.png";
             if (File.Exists(path))
             {
                 zoneData[i] = new Bitmap(path);
@@ -83,6 +85,11 @@ static class DataSource
                 break;
             }
 
+        }
+
+        if (sampleSize < 3)
+        {
+            Console.WriteLine($"WARNING: sample size is very low {sampleSize}");
         }
 
 
@@ -125,7 +132,8 @@ static class DataSource
             }
         }
 
-        baseMap.Save($"{folder_Cache}Basemap.png", ImageFormat.Png);
+        //  cache the bitmap
+        baseMap.Save(cachedBasemapPath, ImageFormat.Png);
         return baseMap;
     }
 
@@ -149,9 +157,6 @@ static class DataSource
                 edgemap.SetPixel(x, y, Color.Purple);
             }
         }
-
-        edgemap.Save($"{folder_Fragments}Edgemap.png", ImageFormat.Png);  //  for debug
-
         return edgemap;
     }
 
@@ -183,6 +188,7 @@ static class DataSource
     
 
     //  can find the centers of any circle as long as the edgemap is good enough
+    //  does not load any images on its own
     public static VecPoint GetRingCenter(Bitmap edgemap, VecPoint start, int ring)
     {
 
@@ -252,7 +258,7 @@ static class DataSource
 
     }
 
-    public static List<VecPoint> GetRingCenters(int gameId, Bitmap basemap)
+    public static List<VecPoint> GetRingCenters(string map, string setName, int gameId, Bitmap basemap)
     {
 
         List<VecPoint> result = new List<VecPoint>();
@@ -262,9 +268,11 @@ static class DataSource
 
         for (int i = 0; i < 5; i++)
         {
-            if (!File.Exists($"{folder_ZoneData}ZoneData_{gameId}_{i}.png"))
+            string filePath = $"{folder_ZoneData}{map}/ZoneData_{gameId}_{i}.{setName}.png";
+            if (!File.Exists(filePath))
                 break;
-            Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap($"{folder_ZoneData}ZoneData_{gameId}_{i}.png"), basemap);
+            Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap(filePath), basemap);
+            edgemap.Save($"{DataSource.folder_Fragments}Edgemap_{gameId}_{i}.png", ImageFormat.Png);
             center = GetRingCenter(edgemap, center, i + 1);
             //Console.WriteLine(center);
             result.Add(center);

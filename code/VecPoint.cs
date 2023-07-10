@@ -99,7 +99,7 @@ readonly struct VecPoint
         float dy = p2.Y - p1.Y;
         if ((dx == 0) && (dy == 0))
         {
-            throw new Exception("Not a line segment");
+            throw new Exception($"Not a line segment, A {A}, B {B}, P {P}");
         }
 
         // Calculate the t that minimizes the distance.
