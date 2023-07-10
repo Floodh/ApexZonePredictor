@@ -41,7 +41,7 @@ static class DataSource
     private const int iterations = 25;
     
 
-    private static Bitmap CaptureMap()
+    public static Bitmap CaptureMap()
     {
 
         Bitmap bitmap = new Bitmap(mapResolution.Width, mapResolution.Height);
@@ -53,101 +53,6 @@ static class DataSource
 
         Console.WriteLine("Captured screenshot");
         return bitmap;
-    }
-
-    //  this data is easier to use to create the base with
-    public static void CaptureDropData()
-    {
-        Console.Write("Which game id to start from?(Enter a number): ");
-        int startFrom = int.Parse(Console.ReadLine());
-
-
-        Bitmap map = DataSource.CaptureMap();
-
-        string line;
-        int gameCount = startFrom;
-
-        while(true)
-        {
-            
-            Console.Write("Capture annother game? (y/n): ");
-            line = Console.ReadLine();
-            if (line != "y")
-                break;
-
-            map = DataSource.CaptureMap();
-            map.Save($"{folder_DropData}DropData_{gameCount}.png", ImageFormat.Png);
-            gameCount++;
-
-        }   
-    }
-
-    public static void CaptureZoneData()
-    {
-
-        Console.Write("Which game id to start from?(Enter a number): ");
-        int startFrom = int.Parse(Console.ReadLine());
-
-
-        Bitmap map = DataSource.CaptureMap();
-
-        string line;
-        int gameCount = startFrom;
-
-        while(true)
-        {
-            
-            Console.Write("Capture annother game? (y/n): ");
-            line = Console.ReadLine();
-            if (line != "y")
-                break;
-
-            int zoneCount = 0;
-            while (true)
-            {
-
-                Console.Write("Capture annother zone? (y/n): ");
-                line = Console.ReadLine();
-                if (line != "y")
-                    break;
-
-                map = DataSource.CaptureMap();
-                map.Save($"{folder_ZoneData}ZoneData_{gameCount}_{zoneCount}.png", ImageFormat.Png);
-
-                zoneCount++;
-
-            }
-
-            gameCount++;
-
-        }    
-    }
-
-    //  same as CaptureZoneData except that the result needs to be saved with a different directory and filename.
-    public static void CaptureRingConsoleData()
-    {  
-        Console.Write("Which game id to start from?(Enter a number): ");
-        int startFrom = int.Parse(Console.ReadLine());
-
-
-        Bitmap map = DataSource.CaptureMap();
-
-        string line;
-        int gameCount = startFrom;
-
-        while(true)
-        {
-            
-            Console.Write("Capture annother game? (y/n): ");
-            line = Console.ReadLine();
-            if (line != "y")
-                break;
-
-            map = DataSource.CaptureMap();
-            map.Save($"{folder_RingConsoleData}RingConsoleData_{gameCount}.png", ImageFormat.Png);
-            gameCount++;
-
-        }    
     }
 
     //  based on the sample data

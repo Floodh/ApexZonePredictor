@@ -14,10 +14,9 @@ static class MainClass
         Console.WriteLine("start");
 
 
-        Activity.ProcessTestData();
+        //Activity.ProcessTestData();
         //Activity.RingConsole();
-        // DataSource.CaptureDropData();
-
+        Activity.CaptureAllData("set1");
 
         Console.WriteLine("end");
         return 0;
