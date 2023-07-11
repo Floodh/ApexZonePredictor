@@ -3,6 +3,9 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 
+//  For WE only set0 exist
+//  For SP only set1 exist
+
 static class MainClass
 {
 
@@ -14,7 +17,7 @@ static class MainClass
         Console.WriteLine("start");
 
 
-        Activity.ProcessTestData("SP", "set1");
+        Activity.ProcessTestData("WE", "set1");
         //Activity.RingConsole();
         //Activity.CaptureAllData("set1");
 

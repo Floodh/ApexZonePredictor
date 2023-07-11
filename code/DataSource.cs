@@ -69,27 +69,25 @@ static class DataSource
 
         Bitmap baseMap = new Bitmap(mapResolution.Width, mapResolution.Height);
         Bitmap[] zoneData = new Bitmap[10];
-        int sampleSize = 0;
+        int sampleSize = Directory.GetFiles($"{folder_DropData}{map}").Length;
+        int sampleCount = 0;
 
-        for (int i = 0; i < 10; i++)    //  will never need more than 10 bitmaps for a good enough basemap
+        for (int i = 0; i < sampleSize; i++)    //  will never need more than 10 bitmaps for a good enough basemap
         {
 
             string path = $"{folder_DropData}{map}/DropData_{i}.{setName}.png";
             if (File.Exists(path))
             {
-                zoneData[i] = new Bitmap(path);
-                sampleSize = i + 1;
+                zoneData[sampleCount] = new Bitmap(path);
+                sampleCount++;
+                if (sampleCount >= 10)
+                    break;
             }
-            else
-            {
-                break;
-            }
-
         }
 
-        if (sampleSize < 3)
+        if (sampleCount < 3)
         {
-            Console.WriteLine($"WARNING: sample size is very low {sampleSize}");
+            Console.WriteLine($"WARNING: gathered samples count is very low {sampleCount}/{sampleSize}");
         }
 
 
@@ -101,14 +99,14 @@ static class DataSource
                 Color color = Color.White;
                 int frequency = -1;
 
-                for (int i = 0; i < sampleSize; i++)
+                for (int i = 0; i < sampleCount; i++)
                 {
 
                     Color pixel = zoneData[i].GetPixel(x, y);
                     int newFreq = 0;
 
 
-                    for (int j = 0; j < sampleSize; j++)
+                    for (int j = 0; j < sampleCount; j++)
                         if (j != i)
                     {
                         //  if duplicate pixel exist

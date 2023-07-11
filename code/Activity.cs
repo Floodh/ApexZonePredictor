@@ -68,7 +68,7 @@ static class Activity
 
         int sampleSize;
         if (map == "WE")
-            sampleSize = 7;
+            sampleSize = 9;
         else if (map == "SP")
             sampleSize = 5;
         else
@@ -92,7 +92,7 @@ static class Activity
         Console.WriteLine("----- Processing Data -----");
 
         for (int sample = 0; sample < sampleSize; sample++)
-            if (File.Exists($"{DataSource.folder_ZoneData}{map}/ZoneData_{sample}_{0}.{setName}.png"))
+            if (File.Exists($"{DataSource.folder_ZoneData}{map}/ZoneData_{sample}_{0}.{setName}.png"))  //  will only process of the right set
         {
 
             Console.WriteLine($"      {sample}");
