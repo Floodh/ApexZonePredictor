@@ -1,3 +1,5 @@
+#pragma warning disable CA1416
+
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -39,8 +41,8 @@ static class Activity
 
         Console.WriteLine("      Searching for ring centers...");
 
-        VecPoint ring1 = DataSource.GetRingCenter(ringConsoleEdgemap, center, 1);
-        VecPoint ring2 = DataSource.GetRingCenter(normalEdgemap, ring1 , 2);
+        VecPoint ring1 = DataSource.GetRingCenter(ringConsoleEdgemap, center, 1, map);
+        VecPoint ring2 = DataSource.GetRingCenter(normalEdgemap, ring1 , 2, map);
 
         Console.WriteLine("      Vector chain...");
         {

@@ -76,8 +76,34 @@ class Result
 
     public void Save()
     {
+
+
         this.image.Save($"{DataSource.folder_Output}/Result_{map}_{gameId}.{dataSet}.png");
-        
+
+        for (int i = 0; i < 5; i++)
+        {
+
+            Bitmap canvas = new Bitmap(DataSource.folder_Fragments + $"Edgemap_{this.gameId}_{i}.png");
+
+            Pen pen = new Pen(Color.White);
+            Graphics g = Graphics.FromImage(canvas);
+
+            int ringCount = 0;
+            foreach (VecPoint p in vectorData.RingCenters)
+            {
+
+                Circle circle = new Circle(p.X, p.Y, DataSource.we_ringRadius[ringCount + 1]);
+                g.DrawEllipse(pen, circle.DrawRect);
+                ringCount++;
+
+            }
+            
+            g.Dispose();
+            pen.Dispose();  
+
+            canvas.Save($"{DataSource.folder_Fragments}/EdgemapInprint_{map}_{gameId}_{i}.{dataSet}.png");   
+        }
+
     }
 
 

@@ -30,17 +30,22 @@ static class DataSource
 
     //  560     1352            1912    1352
     public const double we_ringRadius0 = 100000;
-    public const double we_ringRadius1 = 2 + (1297.0 - 578.0) / 2;
-    public const double we_ringRadius2 = 2 + (1264.0 - 877.0) / 2;
-    public const double we_ringRadius3 = 2 + (1233.0 - 996.0) / 2;
-    public const double we_ringRadius4 = 2 + (1155.0 - 1038.0) / 2;
-    public const double we_ringRadius5 = 2 + (1112.0 - 1055.0) / 2;
+    public const double we_ringRadius1 = 1 + (1297.0 - 578.0) / 2;
+    public const double we_ringRadius2 = 14 + we_ringRadius1 / 2;
+    public const double we_ringRadius3 = 22.5 + we_ringRadius2 / 2;
+    public const double we_ringRadius4 = -0.5 + we_ringRadius3 / 2;
+    public const double we_ringRadius5 = -1 + we_ringRadius4 / 2;    //  still need to figure this one out
     public static readonly double[] we_ringRadius = new double[] {we_ringRadius0, we_ringRadius1, we_ringRadius2, we_ringRadius3, we_ringRadius4, we_ringRadius5};
-
     private static readonly float[] we_ringPullMultipler = new float[6] {0.0025f, 0.0025f, 0.0025f, 0.0025f, 0.0055f, 0.0155f};
+    
+    public const double sp_ringRadius0 = 100000;
+    public const double sp_ringRadius1 = 11 + (1297.0 - 578.0) / 2;
+    public const double sp_ringRadius2 = 5 + (1264.0 - 877.0) / 2;
+    public const double sp_ringRadius3 = 6 + we_ringRadius2 / 2;
+    public const double sp_ringRadius4 = -0.5 + we_ringRadius3 / 2;
+    public const double sp_ringRadius5 = -1 + we_ringRadius4 / 2;    //  still need to figure this one out
+    public static readonly double[] sp_ringRadius = new double[] {sp_ringRadius0, sp_ringRadius1, sp_ringRadius2, we_ringRadius3, sp_ringRadius5, sp_ringRadius5};
 
-
-    private static readonly Circle we_base_firstInvalidCircle = new Circle(808, 800, 10.77);    //  the radius here is not accurate, but it gives better results for some reason.
     private const int iterations = 25;
 
     public static int GetSampleSize_DropData(string map)
@@ -198,7 +203,7 @@ static class DataSource
 
     //  can find the centers of any circle as long as the edgemap is good enough
     //  does not load any images on its own
-    public static VecPoint GetRingCenter(Bitmap edgemap, VecPoint start, int ring)
+    public static VecPoint GetRingCenter(Bitmap edgemap, VecPoint start, int ring, string map)
     {
 
 
@@ -207,7 +212,14 @@ static class DataSource
             new VecPoint(1, 0), new VecPoint(-1, 0), new VecPoint(0, 1), new VecPoint(0, -1),
             new VecPoint(1, 1), new VecPoint(-1, -1), new VecPoint(-1, 1), new VecPoint(1, -1)
             };
-        int radius = (int)we_ringRadius[ring] + 6;  
+        int radius;
+        if (map == "WE")
+            radius = (int)we_ringRadius[ring] + 6;
+        else if (map == "SP")
+            radius = (int)sp_ringRadius[ring] + 6;
+        else
+            throw new ArgumentException($"Invalid map feed into function: {map}");
+
 
 
         for (int i = 0; i < iterations; i++)
@@ -282,7 +294,7 @@ static class DataSource
                 break;
             Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap(filePath), basemap);
             edgemap.Save($"{DataSource.folder_Fragments}Edgemap_{gameId}_{i}.png", ImageFormat.Png);
-            center = GetRingCenter(edgemap, center, i + 1);
+            center = GetRingCenter(edgemap, center, i + 1, map);
             //Console.WriteLine(center);
             result.Add(center);
 
