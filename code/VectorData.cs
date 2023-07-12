@@ -16,8 +16,6 @@ class VectorData
         public VecPoint fourthCircle;          //  unknown
         public VecPoint fifthCircle;           //  unknown
         
-
-    
     //  base vectors
         public VecPoint vec_centerToFirst;
         public VecPoint vec_firstToSecond;
@@ -42,6 +40,20 @@ class VectorData
 
     //
         public bool isSourced = false;
+
+    public VecPoint[] RingCenters 
+    {   get
+    {
+        return new VecPoint[] 
+        {
+            this.firstCircle,
+            this.secondCircle,
+            this.thirdCircle,
+            this.fourthCircle,
+            this.fifthCircle
+        };
+    }
+    }
 
 
     //  when loading from a source where everything is known

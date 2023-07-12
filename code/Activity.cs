@@ -67,10 +67,8 @@ static class Activity
     {
 
         int sampleSize;
-        if (map == "WE")
-            sampleSize = 9;
-        else if (map == "SP")
-            sampleSize = 5;
+        if (map == "WE" || map == "SP")
+            sampleSize = DataSource.GetSampleSize_ZoneData(map);
         else
             throw new Exception($"Invalid map to process test data: {map}, needs to be SP or WE");
 
@@ -91,31 +89,43 @@ static class Activity
 
         Console.WriteLine("----- Processing Data -----");
 
+        List<Result> results = new List<Result>(sampleSize);
+
         for (int sample = 0; sample < sampleSize; sample++)
             if (File.Exists($"{DataSource.folder_ZoneData}{map}/ZoneData_{sample}_{0}.{setName}.png"))  //  will only process of the right set
         {
 
             Console.WriteLine($"      {sample}");
 
+            List<VecPoint> ringCenters;
             Console.WriteLine("      Searching for ring centers...");
+            {
+                ringCenters = DataSource.GetRingCenters(map, setName, sample, basemap);
+            }
 
-            List<VecPoint> ringCenters = DataSource.GetRingCenters(map, setName, sample, basemap);
-
+            VectorData vecData;
             Console.WriteLine("      Vector chain...");
             {
 
                 Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-                VectorData vecData = new VectorData(ringCenters.ToArray());
+                vecData = new VectorData(ringCenters.ToArray());
                 vecData.Draw(canvas);
                 canvas.Save($"{DataSource.folder_Fragments}Vectors{sample}.png", ImageFormat.Png);
 
             }
 
+            Bitmap heatmap;
             Console.WriteLine("      Heatmap...");
             {
-                Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-                Predictor.DrawHeatmap(canvas, ringCenters[0], ringCenters[1], space);
-                canvas.Save($"{DataSource.folder_Fragments}Heatmap_{sample}.png", ImageFormat.Png);
+                heatmap = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+                Predictor.DrawHeatmap(heatmap, ringCenters[0], ringCenters[1], space);
+                heatmap.Save($"{DataSource.folder_Fragments}Heatmap_{sample}.png", ImageFormat.Png);
+            }
+
+            Console.WriteLine("      Determing result...");
+            {
+                Result result = new Result(basemap, heatmap, vecData, map, setName, sample);
+                results.Add(result);
             }
 
             Console.WriteLine("");
@@ -123,8 +133,11 @@ static class Activity
 
         }
 
-    }
+        //  for debug
+        foreach (Result result in results)
+            result.Save();
 
+    }
 
 
     public static void CaptureAllData(string set)

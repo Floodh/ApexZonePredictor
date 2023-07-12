@@ -14,8 +14,11 @@ static class DataSource
     public const string         folder_Space            = folder_DataSource + "Space/";
     public const string         folder_ZoneData         = folder_DataSource + "ZoneData/";
     public const string         folder_RingConsoleData  = folder_DataSource + "RingConsoleData/";
+    
 
     public const string    folder_Fragments    = "Fragments/";
+
+    public const string    folder_Output       = "Output/";
 
 
 
@@ -39,7 +42,15 @@ static class DataSource
 
     private static readonly Circle we_base_firstInvalidCircle = new Circle(808, 800, 10.77);    //  the radius here is not accurate, but it gives better results for some reason.
     private const int iterations = 25;
-    
+
+    public static int GetSampleSize_DropData(string map)
+    {
+        return Directory.GetFiles($"{folder_DropData}{map}").Length;
+    }
+    public static int GetSampleSize_ZoneData(string map)
+    {
+        return Directory.GetFiles($"{folder_ZoneData}{map}").Length;
+    }    
 
     public static Bitmap CaptureMap()
     {
@@ -69,7 +80,7 @@ static class DataSource
 
         Bitmap baseMap = new Bitmap(mapResolution.Width, mapResolution.Height);
         Bitmap[] zoneData = new Bitmap[10];
-        int sampleSize = Directory.GetFiles($"{folder_DropData}{map}").Length;
+        int sampleSize = GetSampleSize_DropData(map);
         int sampleCount = 0;
 
         for (int i = 0; i < sampleSize; i++)    //  will never need more than 10 bitmaps for a good enough basemap

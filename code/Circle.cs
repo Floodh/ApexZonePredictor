@@ -12,6 +12,8 @@ readonly struct Circle
     public readonly int Y {get {return (int)y;}}
     public readonly Point Location { get {return new Point(X, Y);}}
 
+    public readonly Rectangle DrawRect {get {return new Rectangle(this.X - (int)(this.radius), this.Y - (int)(this.radius), (int)(this.radius * 2), (int)(this.radius * 2));}}
+
     public Circle(Point position, double radius)
         : this(position.X, position.Y, radius) 
     {}
