@@ -1,3 +1,5 @@
+#pragma warning disable CA1416
+
 //  all vectors used for the prediction
 
 

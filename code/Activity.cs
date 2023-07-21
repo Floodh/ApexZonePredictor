@@ -23,7 +23,7 @@ static class Activity
         InvalidSpace space;
         {
             Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-            space = new InvalidSpace();
+            space = new InvalidSpace(map);
             space.DrawCombined(canvas);
             canvas.Save($"{DataSource.folder_Cache}Space.png", ImageFormat.Png);
         }
@@ -84,9 +84,9 @@ static class Activity
         InvalidSpace space;
         {
             Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-            space = new InvalidSpace();
+            space = new InvalidSpace(map);
             space.DrawCombined(canvas);
-            canvas.Save($"{DataSource.folder_Cache}Space.png", ImageFormat.Png);
+            canvas.Save($"{DataSource.folder_Cache}{map}_Space.png", ImageFormat.Png);
         }
 
         Console.WriteLine("----- Processing Data -----");

@@ -292,11 +292,14 @@ static class DataSource
             string filePath = $"{folder_ZoneData}{map}/ZoneData_{gameId}_{i}.{setName}.png";
             if (!File.Exists(filePath))
                 break;
-            Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap(filePath), basemap);
-            edgemap.Save($"{DataSource.folder_Fragments}Edgemap_{gameId}_{i}.png", ImageFormat.Png);
-            center = GetRingCenter(edgemap, center, i + 1, map);
-            //Console.WriteLine(center);
-            result.Add(center);
+            using (Bitmap edgemap  = DataSource.FormEdgemap(new Bitmap(filePath), basemap))
+            {
+                Console.WriteLine($"          Saving edgemap {$"{DataSource.folder_Fragments}{map}_Edgemap_{map}_{gameId}_{i}.png"}");
+                edgemap.Save($"{DataSource.folder_Fragments}{map}_Edgemap_{gameId}_{i}.png", ImageFormat.Png);
+                center = GetRingCenter(edgemap, center, i + 1, map);
+                //Console.WriteLine(center);
+                result.Add(center);
+            }
 
         }
 
@@ -330,26 +333,43 @@ static class DataSource
 
     }
 
-    public static Bitmap LoadInvalidZones()
+    public static Bitmap LoadInvalidZones(string map)
     {
-        int x = 208, y = 208, width = 1231 - x, height = 1231 - y;
+        if (map != "WE" & map != "SP")
+        {
+            throw new ArgumentException($"Tried to load invalid Zones data from a map that does not exist : {map}");
+        }
 
-        Bitmap bannedMap = new Bitmap($"{folder_Space}Banned.png");
-        Bitmap bannedMap_cropped = bannedMap.Clone(new Rectangle(x, y, width, height), bannedMap.PixelFormat);
-        Bitmap bannedMap_resized = new Bitmap(bannedMap_cropped, new Size(1352, 1352));
-           
-        Bitmap baseMap = new Bitmap($"{folder_Space}Base.png");
-        Bitmap baseMap_cropped = baseMap.Clone(new Rectangle(x, y, width, height), baseMap.PixelFormat);
-        Bitmap baseMap_resized = new Bitmap(baseMap_cropped, new Size(1352, 1352));
+        Bitmap bannedMap = new Bitmap($"{folder_Space}{map}/Banned.png"); 
+        Bitmap baseMap = new Bitmap($"{folder_Space}{map}/Base.png");
+
+        if (map == "WE")
+        {
+
+            int x = 208, y = 208, width = 1231 - x, height = 1231 - y;
+
+            bannedMap = new Bitmap($"{folder_Space}{map}/Banned.png");
+            Bitmap bannedMap_cropped = bannedMap.Clone(new Rectangle(x, y, width, height), bannedMap.PixelFormat);
+            Bitmap bannedMap_resized = new Bitmap(bannedMap_cropped, new Size(1352, 1352));
+            bannedMap = bannedMap_resized;
+            
+            baseMap = new Bitmap($"{folder_Space}{map}/Base.png");
+            Bitmap baseMap_cropped = baseMap.Clone(new Rectangle(x, y, width, height), baseMap.PixelFormat);
+            Bitmap baseMap_resized = new Bitmap(baseMap_cropped, new Size(1352, 1352));
+            baseMap = baseMap_resized;
+
+            
+
+        }
 
         Bitmap result = new Bitmap(mapResolution.Width, mapResolution.Height);
 
-        for (y = 0; y < mapResolution.Height; y++)
-        for (x = 0; x < mapResolution.Width; x++)
+        for (int y = 0; y < mapResolution.Height; y++)
+        for (int x = 0; x < mapResolution.Width; x++)
         {
             
-            Color pixelData = bannedMap_resized.GetPixel(x, y);
-            Color pixelBase = baseMap_resized.GetPixel(x, y);
+            Color pixelData = bannedMap.GetPixel(x, y);
+            Color pixelBase = baseMap.GetPixel(x, y);
 
             if (pixelData.R - pixelBase.R > 5)
             {
@@ -357,7 +377,7 @@ static class DataSource
             }
         }
 
-        result.Save($"{DataSource.folder_Fragments}OnlyBanned.png", ImageFormat.Png);     //  debug
+        result.Save($"{DataSource.folder_Fragments}{map}_OnlyBanned.png", ImageFormat.Png);     //  debug
         return result;
 
     }

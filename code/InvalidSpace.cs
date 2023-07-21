@@ -10,10 +10,17 @@ class InvalidSpace
 
 
     
-    const string elevationPath = $"{DataSource.folder_Space}Space_Elevation.png";
-    const string hazardPath = $"{DataSource.folder_Space}Space_Hazard.png";
-    const string partialOOBPath = $"{DataSource.folder_Space}Space_PartialOOB.png";
-    const string crowdedPath = $"{DataSource.folder_Space}Space_Crowded.png";
+    const string we_elevationPath = $"{DataSource.folder_Space}WE/Space_Elevation.png";
+    const string we_hazardPath = $"{DataSource.folder_Space}WE/Space_Hazard.png";
+    const string we_partialOOBPath = $"{DataSource.folder_Space}WE/Space_PartialOOB.png";
+    const string we_crowdedPath = $"{DataSource.folder_Space}WE/Space_Crowded.png";
+
+    const string sp_elevationPath = $"{DataSource.folder_Space}SP/Space_Elevation.png";
+    const string sp_hazardPath = $"{DataSource.folder_Space}SP/Space_Hazard.png";
+    const string sp_partialOOBPath = $"{DataSource.folder_Space}SP/Space_PartialOOB.png";
+    const string sp_crowdedPath = $"{DataSource.folder_Space}SP/Space_Crowded.png";
+
+
     //const string bannedPath = $"{DataSource.folder_Space}Banned.png";
 
     readonly Bitmap elevation;
@@ -31,20 +38,28 @@ class InvalidSpace
     readonly Bitmap crowded;
     static readonly Color crowdedColor = Color.FromArgb(Color.GreenYellow.R, Color.GreenYellow.G, Color.GreenYellow.B);
 
-    public InvalidSpace()
-        : this(hazardPath, elevationPath, partialOOBPath, DataSource.LoadInvalidZones())
+    public InvalidSpace(string map)
+        : 
+        this(
+            map == "WE" ? we_hazardPath : sp_hazardPath, 
+            map == "WE" ? we_elevationPath : sp_elevationPath, 
+            map == "WE" ? we_partialOOBPath : sp_partialOOBPath, 
+            DataSource.LoadInvalidZones(map),
+            map)
     {}
 
-    private InvalidSpace(string hazardPath, string elevationPath, string partialOOBPath, Bitmap banned)
-        : this(new Bitmap(hazardPath), new Bitmap(elevationPath), new Bitmap(partialOOBPath), banned)
+    private InvalidSpace(string hazardPath, string elevationPath, string partialOOBPath, Bitmap banned, string map)
+        : this(new Bitmap(hazardPath), new Bitmap(elevationPath), new Bitmap(partialOOBPath), banned, map)
     {}
 
-    private InvalidSpace(Bitmap hazard, Bitmap elevation, Bitmap partialOOB, Bitmap banned)
+    private InvalidSpace(Bitmap hazard, Bitmap elevation, Bitmap partialOOB, Bitmap banned, string map)
     {
         this.hazard = hazard;
         this.elevation = elevation;
         this.partialOOB = partialOOB;
         this.banned = banned;
+
+        string crowdedPath = map == "WE" ? we_crowdedPath : sp_crowdedPath;
 
         if (File.Exists(crowdedPath))
         {

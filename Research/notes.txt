@@ -20,6 +20,20 @@ Confirmed:
             2:  "I have had this zone before", no you did not, you just had a zone that ended almost exactly in the same spot. Which is good enough, but still.
 
 
+Zone patterns:
+    -   Fishhok
+
+    -   Half pull 45 degrees inwards.
+
+        If:
+            1: First ring is half pull
+            2: 2nd ring has to pull inwards, 45 degrees should be the angle between Mid to R1 and Mid to R2
+            3: Unconfirmed: The rings needs to almost be colliding with each other.
+
+        When true:
+            The zone will start pulling in a half moon pattern, and it will gradually start pulling into a dnougnut pattern.
+            Unconfirmed: Zones that ends close to invalid end zone locations are more likely to have this zone pattern. (South Lava Siphon tunnel)
+
 
 
 Sauce:
