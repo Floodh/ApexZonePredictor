@@ -36,7 +36,7 @@ class Result
             
 
             Color heatmapPixel = heatmap.GetPixel(x,y);
-            if (heatmapPixel != basemap.GetPixel(x, y))
+            if (heatmapPixel == Heatmap.heatColor)
             {
                 int dx = vectorData.fifthCircle.X - x;
                 int dy = vectorData.fifthCircle.Y - y;
@@ -48,6 +48,10 @@ class Result
                 }
                 else
                 {
+                    if ((dx * dx + dy * dy) < DataSource.we_ringRadius5 * DataSource.we_ringRadius5)
+                    {
+                        this.image.SetPixel(x, y, Color.LightGreen);
+                    }
                     miss++;
                     this.image.SetPixel(x, y, Color.Red);
                 }
@@ -72,6 +76,9 @@ class Result
         g.Dispose();
         pen.Dispose();
 
+
+        vectorData.Draw(this.image);
+
     }
 
     public void Save()
@@ -80,10 +87,12 @@ class Result
 
         this.image.Save($"{DataSource.folder_Output}/Result_{map}_{gameId}.{dataSet}.png");
 
+
+        //  this is temporary, we should not load from fragments
         for (int i = 0; i < 5; i++)
         {
 
-            Bitmap canvas = new Bitmap(DataSource.folder_Fragments + $"Edgemap_{this.gameId}_{i}.png");
+            Bitmap canvas = new Bitmap(DataSource.folder_Fragments + $"{map}_Edgemap_{this.gameId}_{i}.png");
 
             Pen pen = new Pen(Color.White);
             Graphics g = Graphics.FromImage(canvas);

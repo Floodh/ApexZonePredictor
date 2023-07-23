@@ -5,23 +5,26 @@ using System.Drawing.Imaging;
 using System.Numerics;
 
 
-static class Predictor
+
+
+static class Heatmap
 {
+
+    public static readonly Color heatColor = Color.FromArgb(255, 122, 50);
 
     private const float heatRadius = 22f;
 
 
 
+    //  default implementation, might discard later
     public static void DrawHeatmap(Bitmap canvas, VecPoint firstCircle, VecPoint secondCircle, InvalidSpace space)
     {
         DrawHeatmap(canvas, new VectorData(firstCircle, secondCircle), space);
     }
 
-    public static void DrawHeatmap(Bitmap canvas, VectorData souce, InvalidSpace space)
+    public static Bitmap DrawHeatmap(Bitmap basemap, VectorData souce, InvalidSpace space)
     {
 
-        
-        Bitmap drawmap = new Bitmap(DataSource.mapResolution.Width, DataSource.mapResolution.Height);
         Bitmap transparent = new Bitmap(DataSource.mapResolution.Width, DataSource.mapResolution.Height);
 
         if (souce.isSourced)
@@ -29,29 +32,23 @@ static class Predictor
             Console.WriteLine("Overideing souce!!!!");
         }
 
-        HeatLine(drawmap, souce.G, souce.F);
-        HeatLine(drawmap, souce.J, souce.I);
+        HeatLine(transparent, souce.G, souce.F);
+        HeatLine(transparent, souce.J, souce.I);
 
-        HeatLine(drawmap, souce.F, souce.J); //  if angle >= 90
+        HeatLine(transparent, souce.F, souce.J); //  if angle >= 90
 
-        CleanHeat(drawmap, transparent, DataSource.mapBounds, space);
+        transparent.Save($"{DataSource.folder_Fragments}HeatmapTransparent.png", ImageFormat.Png);
 
-        drawmap.Save($"{DataSource.folder_Fragments}HeatmapTransparent.png", ImageFormat.Png);
+        Bitmap heatmap = Apply(basemap, transparent, DataSource.mapBounds, space);
 
-        for (int y = 0; y < DataSource.mapResolution.Height; y++)
-        for (int x = 0; x < DataSource.mapResolution.Width; x++)     
-        {
-            Color pixel = drawmap.GetPixel(x, y);
-            if (pixel != transparent.GetPixel(x, y))
-                canvas.SetPixel(x, y, pixel);
-        }   
+        return heatmap;
 
     }
 
-    private static void HeatLine(Bitmap canvas, VecPoint start, VecPoint end)
+    public static void HeatLine(Bitmap canvas, VecPoint start, VecPoint end)
     {
         //Pen pen = new Pen(Color.Red);
-        Brush brush = new SolidBrush(Color.Firebrick);
+        Brush brush = new SolidBrush(heatColor);
         Graphics g = Graphics.FromImage(canvas);
 
 
@@ -74,20 +71,24 @@ static class Predictor
 
     }
 
-    public static void CleanHeat(Bitmap canvas, Bitmap basemap, Rectangle area, InvalidSpace space)
+    public static Bitmap Apply(Bitmap basemap, Bitmap heatmap, Rectangle area, InvalidSpace space)
     {
+        Bitmap result = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
 
         for (int y = area.Y; y < area.Bottom; y++)
         for (int x = area.X; x < area.Right; x++)
         {
-            if (canvas.GetPixel(x, y) != basemap.GetPixel(x, y))
-            {
-                if (!space.IsValidCircle(new Circle(x, y, DataSource.we_ringRadius5)))
-                {
-                    canvas.SetPixel(x, y, basemap.GetPixel(x, y));
-                }
-            }
+
+            Color pixel = heatmap.GetPixel(x, y);
+            result.SetPixel(x, y, basemap.GetPixel(x, y));
+
+            if (pixel == heatColor)
+                if (space.IsValidCircle(new Circle(x, y, DataSource.we_ringRadius5)))
+                    result.SetPixel(x, y, pixel);
+                
+            
         }
+        return result;
 
     }
 

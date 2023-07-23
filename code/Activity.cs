@@ -57,7 +57,7 @@ static class Activity
         Console.WriteLine("      Heatmap...");
         {
             Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-            Predictor.DrawHeatmap(canvas, ring1, ring2, space);
+            Heatmap.DrawHeatmap(canvas, ring1, ring2, space);
             canvas.Save($"{folder_Output}C_Heatmap_.png", ImageFormat.Png);
         }
 
@@ -106,38 +106,49 @@ static class Activity
             }
 
             VectorData vecData;
-            Console.WriteLine("      Vector chain...");
+            Console.WriteLine("      Calculating Vectors...");
             {
 
                 Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
                 vecData = new VectorData(ringCenters.ToArray());
                 vecData.Draw(canvas);
-                canvas.Save($"{DataSource.folder_Fragments}Vectors{sample}.png", ImageFormat.Png);
+                canvas.Save($"{DataSource.folder_Fragments}Vectors_{map}_{sample}.png", ImageFormat.Png);
 
             }
 
             Bitmap heatmap;
-            Console.WriteLine("      Heatmap...");
+            Console.WriteLine("      Creating Heatmap...");
             {
-                heatmap = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-                Predictor.DrawHeatmap(heatmap, ringCenters[0], ringCenters[1], space);
+                // heatmap = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+                // Heatmap.DrawHeatmap(heatmap, ringCenters[0], ringCenters[1], space);
+                Method m = new Method(Method.Pattern.floatPull_80degress);
+                heatmap = m.Apply(basemap, vecData, space);                
                 heatmap.Save($"{DataSource.folder_Fragments}Heatmap_{sample}.png", ImageFormat.Png);
             }
 
-            Console.WriteLine("      Determing result...");
+            Console.WriteLine("      Determening result...");
             {
                 Result result = new Result(basemap, heatmap, vecData, map, setName, sample);
                 results.Add(result);
+                result.Save();
             }
+
+            // Console.WriteLine("      Extra dubbging...");
+            // {
+            //     Method m = new Method(Method.Pattern.floatPull_80degress);
+            //     heatmap = m.Apply(basemap, vecData, space);
+            //     Result result = new Result(basemap, heatmap, vecData, map, setName, sample);
+            //     result.Save();
+            // }
 
             Console.WriteLine("");
 
 
         }
 
-        //  for debug
-        foreach (Result result in results)
-            result.Save();
+        // //  for debug
+        // foreach (Result result in results)
+        //     result.Save();
 
     }
 

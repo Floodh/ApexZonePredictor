@@ -21,7 +21,7 @@ Confirmed:
 
 
 Zone patterns:
-    -   Fishhok
+    -   Fishhook
 
     -   Half pull 45 degrees inwards.
 

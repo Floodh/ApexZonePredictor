@@ -39,6 +39,16 @@ class VectorData
         public VecPoint vec_FtoG;  //  the hard one
         public VecPoint vec_JtoI;
         public VecPoint vec_DtoJ;
+        public VecPoint vec_FtoJ;       //  this value is bugged
+
+    //  angles
+        public double diffAngle;
+        public double pullAngle;
+        public double pullAngle_high;
+        public double pullAngle_low;
+
+    //  other
+        public double pullLength;
 
     //
         public bool isSourced = false;
@@ -123,6 +133,29 @@ class VectorData
             G = F + vec_FtoG;
             J = D + vec_DtoJ;
             I = J + vec_JtoI;
+            vec_FtoJ = J - F;
+
+        //  important angles
+            VecPoint c1 = firstCircle;
+            VecPoint c2 = secondCircle;
+
+            this.diffAngle = Math.Abs(mapCenter.AngleTo(c1) - mapCenter.AngleTo(c2));
+            this.pullAngle = c1.AngleTo(mapCenter, c2);
+            if (this.pullAngle > Math.PI)
+            {
+                this.pullAngle_high = this.pullAngle;
+                this.pullAngle_low = this.pullAngle - Math.PI;
+            }
+            else
+            {
+                this.pullAngle_high = this.pullAngle + Math.PI;
+                this.pullAngle_low = this.pullAngle;
+            }
+        
+        //  other
+            this.pullLength = (this.firstCircle - this.secondCircle).Length;
+            
+
     }
 
     public void Draw(Bitmap canvas)

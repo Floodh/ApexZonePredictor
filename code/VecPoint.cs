@@ -58,7 +58,26 @@ readonly struct VecPoint
         return this.value.ToString();
     }
 
+    //              0.0, 1.0 : PI / 2
+    //  - 1.0, 0.0 : PI             1.0, 0.0 : 0
+    //              0.0, -1.0 : -PI / 2
+    public double Angle()
+    {
+        //Console.WriteLine($"          Angle: {Math.Atan2(this.Y, this.X)} from {this}");
+        double rad = Math.Atan2(this.Y, this.X);
+        if (rad < 0)
+            return 2 * Math.PI + rad;
+        return rad;
+    }
 
+    public double AngleTo(VecPoint p)
+    {
+       return (p - this).Angle(); 
+    }
+    public double AngleTo(VecPoint origo, VecPoint p)
+    {
+       return ((p - origo) - (this - origo)).Angle(); 
+    }
     public static VecPoint operator +(VecPoint p1, VecPoint p2)
     {
         return new VecPoint(p1.X + p2.X, p1.Y + p2.Y);
@@ -71,6 +90,10 @@ readonly struct VecPoint
     {
         return new VecPoint(p.X * multipler, p.Y * multipler);
     }
+    public static VecPoint operator *(int multipler, VecPoint p)
+    {
+        return p * multipler;
+    }    
     public static VecPoint operator /(VecPoint p, int divide)
     {
         return new VecPoint(p.X / divide, p.Y / divide);
