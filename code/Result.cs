@@ -48,12 +48,16 @@ class Result
                 }
                 else
                 {
-                    if ((dx * dx + dy * dy) < DataSource.we_ringRadius5 * DataSource.we_ringRadius5)
+                    dx = vectorData.fourthCircle.X - x;
+                    dy = vectorData.fourthCircle.Y - y;                    
+                    if ((dx * dx + dy * dy) < DataSource.we_ringRadius4 * DataSource.we_ringRadius4)
                     {
                         this.image.SetPixel(x, y, Color.LightGreen);
                     }
+                    else
+                        this.image.SetPixel(x, y, Color.Red);
                     miss++;
-                    this.image.SetPixel(x, y, Color.Red);
+                    
                 }
             }
         }

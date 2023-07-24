@@ -12,57 +12,57 @@ static class Activity
     public const string folder_Output = "Output/";
 
 
-    //  this function does no not work anymore
-    public static void ProcessRingConsoleData(string map, string setName)
-    {
-        Console.WriteLine("----- Forming base -----");
-        Bitmap basemap = DataSource.FormBase(map, setName);
+    // //  this function does no not work anymore
+    // public static void ProcessRingConsoleData(string map, string setName)
+    // {
+    //     Console.WriteLine("----- Forming base -----");
+    //     Bitmap basemap = DataSource.FormBase(map, setName);
 
 
-        Console.WriteLine("----- Determining space ----");
-        InvalidSpace space;
-        {
-            Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-            space = new InvalidSpace(map);
-            space.DrawCombined(canvas);
-            canvas.Save($"{DataSource.folder_Cache}Space.png", ImageFormat.Png);
-        }
+    //     Console.WriteLine("----- Determining space ----");
+    //     InvalidSpace space;
+    //     {
+    //         Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+    //         space = new InvalidSpace(map);
+    //         space.DrawCombined(canvas);
+    //         canvas.Save($"{DataSource.folder_Cache}Space.png", ImageFormat.Png);
+    //     }
 
-        Console.WriteLine("----- Processing Data -----");
+    //     Console.WriteLine("----- Processing Data -----");
 
-        VecPoint center = new VecPoint(DataSource.mapResolution.Width / 2, DataSource.mapResolution.Height / 2);
-        Bitmap source = new Bitmap("DataSource/RingConsoleData/RingConsoleData_0.png");
+    //     VecPoint center = new VecPoint(DataSource.mapResolution.Width / 2, DataSource.mapResolution.Height / 2);
+    //     Bitmap source = new Bitmap("DataSource/RingConsoleData/RingConsoleData_0.png");
 
-        Bitmap ringConsoleEdgemap = DataSource.FormEdgemap_RingConsole(source, basemap);
-        ringConsoleEdgemap.Save($"{DataSource.folder_Fragments}/EdgemapConsole.png", ImageFormat.Png);
-        Bitmap normalEdgemap = DataSource.FormEdgemap(source, basemap);
-        normalEdgemap.Save($"{DataSource.folder_Fragments}/EdgemapNormal.png", ImageFormat.Png);
+    //     Bitmap ringConsoleEdgemap = DataSource.FormEdgemap_RingConsole(source, basemap);
+    //     ringConsoleEdgemap.Save($"{DataSource.folder_Fragments}/EdgemapConsole.png", ImageFormat.Png);
+    //     Bitmap normalEdgemap = DataSource.FormEdgemap(source, basemap);
+    //     normalEdgemap.Save($"{DataSource.folder_Fragments}/EdgemapNormal.png", ImageFormat.Png);
 
 
-        Console.WriteLine("      Searching for ring centers...");
+    //     Console.WriteLine("      Searching for ring centers...");
 
-        VecPoint ring1 = DataSource.GetRingCenter(ringConsoleEdgemap, center, 1, map);
-        VecPoint ring2 = DataSource.GetRingCenter(normalEdgemap, ring1 , 2, map);
+    //     VecPoint ring1 = DataSource.GetRingCenter(ringConsoleEdgemap, center, 1, map);
+    //     VecPoint ring2 = DataSource.GetRingCenter(normalEdgemap, ring1 , 2, map);
 
-        Console.WriteLine("      Vector chain...");
-        {
+    //     Console.WriteLine("      Vector chain...");
+    //     {
 
-            Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-            VectorData vecData = new VectorData(ring1, ring2);
-            vecData.Draw(canvas);
-            canvas.Save($"{folder_Output}C_Vectors.png", ImageFormat.Png);
+    //         Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+    //         VectorData vecData = new VectorData(ring1, ring2);
+    //         vecData.Draw(canvas);
+    //         canvas.Save($"{folder_Output}C_Vectors.png", ImageFormat.Png);
 
-        }
+    //     }
 
-        Console.WriteLine("      Heatmap...");
-        {
-            Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
-            Heatmap.DrawHeatmap(canvas, ring1, ring2, space);
-            canvas.Save($"{folder_Output}C_Heatmap_.png", ImageFormat.Png);
-        }
+    //     Console.WriteLine("      Heatmap...");
+    //     {
+    //         Bitmap canvas = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+    //         Heatmap.DrawHeatmap(canvas, ring1, ring2, space);
+    //         canvas.Save($"{folder_Output}C_Heatmap_.png", ImageFormat.Png);
+    //     }
 
-        Console.WriteLine("");
-    }
+    //     Console.WriteLine("");
+    // }
 
 
     public static void ProcessTestData(string map, string setName)
@@ -121,9 +121,17 @@ static class Activity
             {
                 // heatmap = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
                 // Heatmap.DrawHeatmap(heatmap, ringCenters[0], ringCenters[1], space);
-                Method m = new Method(Method.Pattern.floatPull_80degress);
-                heatmap = m.Apply(basemap, vecData, space);                
+                Method m = new Method(vecData);
+                heatmap = m.Apply(basemap, vecData, space, map);                
                 heatmap.Save($"{DataSource.folder_Fragments}Heatmap_{sample}.png", ImageFormat.Png);
+
+                if (sample == 4)
+                {
+                    if (m.ringPattern != Method.Pattern.delayedHardPull)
+                        Console.WriteLine("            Warning: Incorrect zone pattern for sample: WE 4");
+                    if (Math.Abs(vecData.pullAngle_low - Math.PI) > 0.1)
+                        Console.WriteLine("            Warning: Incorrect angle for sample: WE 4");
+                }
             }
 
             Console.WriteLine("      Determening result...");

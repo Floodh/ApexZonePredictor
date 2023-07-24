@@ -30,7 +30,7 @@ class VectorData
     //  combined vectors
         public VecPoint vec_seedPull;          //  todo
     //  tangent method / LinBoBo methods
-        public VecPoint A, B, C, D, E, F, G, J, I;        //  skipping H since its useless anyway
+        public VecPoint A, B, C, D, E, F, G, J, I, M;        //  skipping H since its useless anyway
 
         public VecPoint vec_AtoC;  //  same as vec_centerToEdge
         public VecPoint vec_BtoE;  
@@ -39,7 +39,7 @@ class VectorData
         public VecPoint vec_FtoG;  //  the hard one
         public VecPoint vec_JtoI;
         public VecPoint vec_DtoJ;
-        public VecPoint vec_FtoJ;       //  this value is bugged
+
 
     //  angles
         public double diffAngle;
@@ -106,7 +106,7 @@ class VectorData
             Vector2 vec = new Vector2(vec_centerToFirst.X, vec_centerToFirst.Y);
             float circleRadius = (float)DataSource.we_ringRadius[1];
             vec = new Vector2(vec.X * ((circleRadius - vec.Length() ) / circleRadius), vec.Y * ((circleRadius - vec.Length())  / circleRadius));
-            VecPoint vec_centerToEdge = new VecPoint(-(int)vec.X, -(int)vec.Y); 
+            vec_centerToEdge = new VecPoint(-(int)vec.X, -(int)vec.Y); 
 
         //  Tangent method
 
@@ -126,6 +126,7 @@ class VectorData
             D = secondCircle;
             E = B + vec_BtoE;
             F = E + vec_EtoF;
+            M = D + vec_BtoD / 2;
 
             vec_FtoG = (VecPoint.GetClosestPoint(D, E, F) - F);
             vec_FtoG = vec_FtoG + vec_FtoG;
@@ -133,7 +134,7 @@ class VectorData
             G = F + vec_FtoG;
             J = D + vec_DtoJ;
             I = J + vec_JtoI;
-            vec_FtoJ = J - F;
+
 
         //  important angles
             VecPoint c1 = firstCircle;

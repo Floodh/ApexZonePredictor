@@ -12,38 +12,7 @@ static class Heatmap
 
     public static readonly Color heatColor = Color.FromArgb(255, 122, 50);
 
-    private const float heatRadius = 22f;
-
-
-
-    //  default implementation, might discard later
-    public static void DrawHeatmap(Bitmap canvas, VecPoint firstCircle, VecPoint secondCircle, InvalidSpace space)
-    {
-        DrawHeatmap(canvas, new VectorData(firstCircle, secondCircle), space);
-    }
-
-    public static Bitmap DrawHeatmap(Bitmap basemap, VectorData souce, InvalidSpace space)
-    {
-
-        Bitmap transparent = new Bitmap(DataSource.mapResolution.Width, DataSource.mapResolution.Height);
-
-        if (souce.isSourced)
-        {
-            Console.WriteLine("Overideing souce!!!!");
-        }
-
-        HeatLine(transparent, souce.G, souce.F);
-        HeatLine(transparent, souce.J, souce.I);
-
-        HeatLine(transparent, souce.F, souce.J); //  if angle >= 90
-
-        transparent.Save($"{DataSource.folder_Fragments}HeatmapTransparent.png", ImageFormat.Png);
-
-        Bitmap heatmap = Apply(basemap, transparent, DataSource.mapBounds, space);
-
-        return heatmap;
-
-    }
+    private const float heatRadius = 28f;
 
     public static void HeatLine(Bitmap canvas, VecPoint start, VecPoint end)
     {
@@ -78,13 +47,26 @@ static class Heatmap
         for (int y = area.Y; y < area.Bottom; y++)
         for (int x = area.X; x < area.Right; x++)
         {
+            ApplyPixel(basemap, heatmap, space, result, x, y);
+        }
+        return result;
 
-            Color pixel = heatmap.GetPixel(x, y);
-            result.SetPixel(x, y, basemap.GetPixel(x, y));
+    }
 
-            if (pixel == heatColor)
-                if (space.IsValidCircle(new Circle(x, y, DataSource.we_ringRadius5)))
-                    result.SetPixel(x, y, pixel);
+    public static Bitmap Apply(Bitmap basemap, Bitmap heatmap, Circle circleArea, InvalidSpace space)
+    {
+        Bitmap result = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
+        Rectangle squareArea = new Rectangle((int)(circleArea.x - circleArea.radius), (int)(circleArea.y - circleArea.radius), (int)(circleArea.radius * 2), (int)(circleArea.radius * 2));
+
+        for (int y = squareArea.Y; y < squareArea.Bottom; y++)
+        for (int x = squareArea.X; x < squareArea.Right; x++)
+        {
+            int dx = x - circleArea.X;
+            int dy = y - circleArea.Y;
+            if (dx * dx + dy * dy < circleArea.radius * circleArea.radius)
+            {
+                ApplyPixel(basemap, heatmap, space, result, x, y);
+            }
                 
             
         }
@@ -92,6 +74,15 @@ static class Heatmap
 
     }
 
+    private static void ApplyPixel(Bitmap basemap, Bitmap heatmap, InvalidSpace space, Bitmap result, int x, int y)
+    {
+        Color pixel = heatmap.GetPixel(x, y);
+        result.SetPixel(x, y, basemap.GetPixel(x, y));
+
+        if (pixel == heatColor)
+            if (space.IsValidCircle(new Circle(x, y, DataSource.we_ringRadius5)))
+                result.SetPixel(x, y, pixel);        
+    }
 
 
 
