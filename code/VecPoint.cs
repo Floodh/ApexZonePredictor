@@ -70,6 +70,7 @@ readonly struct VecPoint
         return rad;
     }
 
+    //  this one might be bugged
     public double AngleTo(VecPoint p)
     {
        return (p - this).Angle(); 

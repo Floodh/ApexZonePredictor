@@ -154,11 +154,11 @@ class Method
 
         Pattern pattern = Pattern.none;
 
-        if (IscloseTo(vectorData.pullAngle_low, 0.96 * Math.PI, 0.10))
+        if (IscloseTo(vectorData.pullAngle_low, 0.41 * Math.PI, 0.10))
             pattern = Pattern.floatPull;
-        else if (IscloseTo(vectorData.pullAngle_low, 0.62 * Math.PI, 0.10))
+        else if (IscloseTo(vectorData.pullAngle_low, 0.61 * Math.PI, 0.10))
             pattern = Pattern.halfMoonDoughnut;
-        else if (IscloseTo(vectorData.pullAngle_low, 0.27 * Math.PI, 0.10))
+        else if (IscloseTo(vectorData.pullAngle_low, 1.0 * Math.PI, 0.10))
             pattern = Pattern.delayedHardPull;
 
         Console.WriteLine("               Pattern = " + pattern);

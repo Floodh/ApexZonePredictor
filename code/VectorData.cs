@@ -137,19 +137,23 @@ class VectorData
 
 
         //  important angles
-            VecPoint c1 = firstCircle;
-            VecPoint c2 = secondCircle;
+            VecPoint mToC1 = vec_centerToFirst;
+            VecPoint c1ToC2 = vec_firstToSecond;
+            // VecPoint c2 = secondCircle;
 
-            this.diffAngle = Math.Abs(mapCenter.AngleTo(c1) - mapCenter.AngleTo(c2));
-            this.pullAngle = c1.AngleTo(mapCenter, c2);
+            this.diffAngle = Math.Abs(mapCenter.AngleTo(B) - mapCenter.AngleTo(D));
+            double angle0 = mToC1.Angle();
+            double angle1 = c1ToC2.Angle();
+            //Console.WriteLine($"            angles : {angle0} / {angle1}, diff {angle0 - angle1}");
+            this.pullAngle = (angle0 - angle1) + Math.PI;
             if (this.pullAngle > Math.PI)
             {
                 this.pullAngle_high = this.pullAngle;
-                this.pullAngle_low = this.pullAngle - Math.PI;
+                this.pullAngle_low = 2 * Math.PI - this.pullAngle;
             }
             else
             {
-                this.pullAngle_high = this.pullAngle + Math.PI;
+                this.pullAngle_high = 2 * Math.PI - this.pullAngle;
                 this.pullAngle_low = this.pullAngle;
             }
         
