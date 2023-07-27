@@ -11,7 +11,7 @@ static class Activity
 
     public const string folder_Output = "Output/";
 
-    public static void ProcessTestData(string map, string setName)
+    public static List<Result> ProcessTestData(string map, string setName)
     {
 
         int sampleSize;
@@ -85,25 +85,16 @@ static class Activity
             {
                 Result result = new Result(basemap, heatmap, vecData, m, map, setName, sample);
                 results.Add(result);
-                result.Save();
+
             }
 
-            // Console.WriteLine("      Extra dubbging...");
-            // {
-            //     Method m = new Method(Method.Pattern.floatPull_80degress);
-            //     heatmap = m.Apply(basemap, vecData, space);
-            //     Result result = new Result(basemap, heatmap, vecData, map, setName, sample);
-            //     result.Save();
-            // }
 
             Console.WriteLine("");
 
 
         }
 
-        // //  for debug
-        // foreach (Result result in results)
-        //     result.Save();
+        return results;
 
     }
 

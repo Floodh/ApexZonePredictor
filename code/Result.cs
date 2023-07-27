@@ -174,8 +174,17 @@ class Result
         ;
         DrawText(infoImage, drawArea, drawText, 12);
 
-        
+        drawArea = new Rectangle(image.Width - 320, 12, 320, image.Height - 12);
+        drawText = 
+            $"Merit      |   this    |   median   |   avg\n" +
+            $"Precision  |   {Math.Round(this.precision, 3)}    |   {Math.Round(medianPrecision, 3)}   |   {Math.Round(avgPrecision, 3)}\n" +
+            $"Hits       |   {this.hits}    |   {medianHits}   |   {avgHits}\n" +
+            $"Misses     |   {this.misses}    |   {medianMisses}   |   {avgMisses}\n" +
+            $"MarkedArea |   {this.markedArea}    |   {medianMarkedArea}   |   {avgMarkedArea}\n"
+        ;
+        DrawText(infoImage, drawArea, drawText, 12);    
 
+        
 
         return infoImage;
 
