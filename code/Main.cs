@@ -34,7 +34,7 @@ static class MainClass
             result.Save();
 
         // //Activity.RingConsole();
-        // //Activity.CaptureAllData("set1");
+        //Activity.CaptureAllData("set1");
 
         Console.WriteLine("End");
         return 0;

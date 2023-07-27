@@ -14,7 +14,8 @@ class Method
         none,
         floatPull,          //  45 
         halfMoonDoughnut,   //  acts like a half moon into a dounghnut
-        delayedHardPull     //  when all centers align along one line
+        delayedHardPull,    //  when all centers align along one line, strong indication that the zone has been impacted by lack of trafic
+        mimicPull           //  true counter pull
     }
 
     public readonly Pattern ringPattern;
@@ -118,9 +119,26 @@ class Method
 
         Bitmap heatmap = Apply_default(basemap, vecData, space);
 
+        //VecPoint p = (vecData.J + vecData.F) / 2;
+
+
         return heatmap;        
 
     }
+
+    //  this pull could potentialy be map specific, and is likely to change its behavior depending on map updates
+    // public Bitmap Apply_mimicPull(Bitmap basemap, VectorData vecData, InvalidSpace space, string map)
+    // {
+
+    //     if (vecData.isSourced)
+    //         Console.WriteLine("               Overideing souce!!!!");
+
+
+    //     //VecPoint p = vecData.
+
+    //     Bitmap heatmap = Apply_default(basemap, vecData, space);
+
+    // }
 
     public Bitmap Apply_default(Bitmap basemap, VectorData vecData, InvalidSpace space)
     {
