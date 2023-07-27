@@ -35,6 +35,15 @@ Zone patterns:
             Unconfirmed: Zones that ends close to invalid end zone locations are more likely to have this zone pattern. (South Lava Siphon tunnel)
 
 
+    -   Mimic
+        If:
+            ???
+            Ring are touching while lacking other indicators for hard pulls.
+        
+        When true:
+            3rd circle will hard pull to where the inne triangle is pointing.
+            the 4th will counter pull halfway back towards the 2nd circle
+            the 5th and final pull will be towards the center of the map perpendicular to the 2 most recent pulls
 
 Sauce:
 

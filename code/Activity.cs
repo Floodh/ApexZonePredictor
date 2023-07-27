@@ -63,11 +63,12 @@ static class Activity
             }
 
             Bitmap heatmap;
+            Method m;
             Console.WriteLine("      Creating Heatmap...");
             {
                 // heatmap = basemap.Clone(new Rectangle(0, 0, basemap.Width, basemap.Height), basemap.PixelFormat);
                 // Heatmap.DrawHeatmap(heatmap, ringCenters[0], ringCenters[1], space);
-                Method m = new Method(vecData);
+                m = new Method(vecData);
                 heatmap = m.Apply(basemap, vecData, space, map);                
                 heatmap.Save($"{DataSource.folder_Fragments}Heatmap_{sample}.png", ImageFormat.Png);
 
@@ -82,7 +83,7 @@ static class Activity
 
             Console.WriteLine("      Determening result...");
             {
-                Result result = new Result(basemap, heatmap, vecData, map, setName, sample);
+                Result result = new Result(basemap, heatmap, vecData, m, map, setName, sample);
                 results.Add(result);
                 result.Save();
             }
