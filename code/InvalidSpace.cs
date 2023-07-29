@@ -13,12 +13,14 @@ class InvalidSpace
     const string we_elevationPath = $"{DataSource.folder_Space}WE/Space_Elevation.png";
     const string we_hazardPath = $"{DataSource.folder_Space}WE/Space_Hazard.png";
     const string we_partialOOBPath = $"{DataSource.folder_Space}WE/Space_PartialOOB.png";
-    const string we_crowdedPath = $"{DataSource.folder_Space}WE/Space_Crowded.png";
+    const string we_crowdedPath = $"{DataSource.folder_Cache}WE_Space_Crowded.png";
+    const string we_outsidePath = $"{DataSource.folder_Space}WE/Space_Outside_Handmade.png";
 
     const string sp_elevationPath = $"{DataSource.folder_Space}SP/Space_Elevation.png";
     const string sp_hazardPath = $"{DataSource.folder_Space}SP/Space_Hazard.png";
     const string sp_partialOOBPath = $"{DataSource.folder_Space}SP/Space_PartialOOB.png";
-    const string sp_crowdedPath = $"{DataSource.folder_Space}SP/Space_Crowded.png";
+    const string sp_crowdedPath = $"{DataSource.folder_Cache}SP_Space_Crowded.png";
+    const string sp_outsidePath = $"{DataSource.folder_Space}SP/Space_Outside_Handmade.png";
 
 
     //const string bannedPath = $"{DataSource.folder_Space}Banned.png";
@@ -32,11 +34,16 @@ class InvalidSpace
     readonly Bitmap partialOOB;
     static readonly Color partialOOBColor = Color.FromArgb(85, 32, 115);
 
+    readonly Bitmap outside;
+    static readonly Color outsideColor = Color.FromArgb(157, 233, 74);
+
     readonly Bitmap banned;
     static readonly Color bannedColor = Color.FromArgb(Color.Red.R, Color.Red.G, Color.Red.B);
 
     readonly Bitmap crowded;
     static readonly Color crowdedColor = Color.FromArgb(Color.GreenYellow.R, Color.GreenYellow.G, Color.GreenYellow.B);
+
+
 
     public InvalidSpace(string map)
         : 
@@ -44,19 +51,27 @@ class InvalidSpace
             map == "WE" ? we_hazardPath : sp_hazardPath, 
             map == "WE" ? we_elevationPath : sp_elevationPath, 
             map == "WE" ? we_partialOOBPath : sp_partialOOBPath, 
+            map == "WE" ? we_outsidePath : sp_outsidePath,
             DataSource.LoadInvalidZones(map),
             map)
     {}
 
-    private InvalidSpace(string hazardPath, string elevationPath, string partialOOBPath, Bitmap banned, string map)
-        : this(new Bitmap(hazardPath), new Bitmap(elevationPath), new Bitmap(partialOOBPath), banned, map)
+    private InvalidSpace(string hazardPath, string elevationPath, string partialOOBPath, string outsidePath, Bitmap banned, string map)
+        : this(
+            new Bitmap(hazardPath), 
+            new Bitmap(elevationPath), 
+            new Bitmap(partialOOBPath), 
+            new Bitmap(outsidePath), 
+            banned, 
+            map)
     {}
 
-    private InvalidSpace(Bitmap hazard, Bitmap elevation, Bitmap partialOOB, Bitmap banned, string map)
+    private InvalidSpace(Bitmap hazard, Bitmap elevation, Bitmap partialOOB, Bitmap outside, Bitmap banned, string map)
     {
         this.hazard = hazard;
         this.elevation = elevation;
         this.partialOOB = partialOOB;
+        this.outside = outside;
         this.banned = banned;
 
         string crowdedPath = map == "WE" ? we_crowdedPath : sp_crowdedPath;
@@ -104,6 +119,8 @@ class InvalidSpace
             return false;
         if (elevation.GetPixel(x, y) == elevationColor)
             return false;
+        if (IsOutside(x, y))
+            return false;
 
 
         return true;
@@ -128,6 +145,11 @@ class InvalidSpace
         return true;
     }
 
+    public bool IsOutside(int x, int y)
+    {
+        return this.outside.GetPixel(x, y) == outsideColor;
+    }
+
     public bool IsCrowded(int x, int y)
     {
         return this.crowded.GetPixel(x, y) == crowdedColor;
@@ -136,8 +158,8 @@ class InvalidSpace
     private bool IsCrowded_Expensive(int x, int y)
     {
 
-        if (!CanEnd(x, y))  //  maybe chage this?
-            return false;
+        if (IsOutside(x, y))  //  maybe chage this? changed it!, however its way more exspansive now
+            return true;
                     
         double radius = DataSource.we_ringRadius5;
 
@@ -186,13 +208,16 @@ class InvalidSpace
     //      and if the majority of the ring is playable
     public bool IsValidCircle(Circle finalRing)
     {
+        return this.IsValidCircle(finalRing.X, finalRing.Y);
+    }
+    public bool IsValidCircle(int x, int y)
+    {
 
-        if (!CanEnd(finalRing.X, finalRing.Y))
+        if (!CanEnd(x, y))
             return false;
 
-        return !this.IsCrowded(finalRing.X, finalRing.Y);
+        return !this.IsCrowded(x, y);
     }
-
 
     public void DrawCombined(Bitmap canvas)
     {
@@ -201,18 +226,11 @@ class InvalidSpace
         {
             if (IsPlayable(x, y))
             {
-                if (CanEnd(x, y))
-                {
-                    if (IsCrowded(x, y))
-                    {
-                        canvas.SetPixel(x, y, crowdedColor);
-
-                    }
-                }
-                else
-                {
+                if (IsCrowded(x, y))
+                    canvas.SetPixel(x, y, crowdedColor);
+                else if (!CanEnd(x, y))
                     canvas.SetPixel(x, y, Color.Red);
-                }
+                
             }
             else
             {

@@ -182,6 +182,12 @@ class Result
             $"Misses     |   {this.misses}    |   {medianMisses}   |   {avgMisses}\n" +
             $"MarkedArea |   {this.markedArea}    |   {medianMarkedArea}   |   {avgMarkedArea}\n"
         ;
+        DrawText(infoImage, drawArea, drawText, 12);  
+         
+        drawArea = new Rectangle(image.Width - 260, 12 * 12, 260, image.Height - 12 * 12);
+        drawText = 
+            $"Detected Pattern : {this.methodUsed.ringPattern}\n"
+        ;
         DrawText(infoImage, drawArea, drawText, 12);    
 
         

@@ -11,6 +11,17 @@ static class Activity
 
     public const string folder_Output = "Output/";
 
+    public static void PrepareCache()
+    {
+        InvalidSpace space_we = new InvalidSpace("WE");
+        InvalidSpace space_sp = new InvalidSpace("SP");
+        
+        //Traffic traffic = new Traffic(space_we);
+        
+
+    }
+
+
     public static List<Result> ProcessTestData(string map, string setName)
     {
 

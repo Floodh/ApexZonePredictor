@@ -16,6 +16,8 @@ static class MainClass
 
         Console.WriteLine("Start");
 
+        //Activity.PrepareCache();
+
 
         List<Result> result_we_set0 = Activity.ProcessTestData("WE", "set0");
         List<Result> result_we_set1 = Activity.ProcessTestData("WE", "set1");

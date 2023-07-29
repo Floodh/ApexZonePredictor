@@ -15,6 +15,7 @@ class Method
         floatPull,          //  45 
         halfMoonDoughnut,   //  acts like a half moon into a dounghnut
         delayedHardPull,    //  when all centers align along one line, strong indication that the zone has been impacted by lack of trafic
+        delayedSoftPull,    //  similar to delayedHardPull, except that pulls don't hard pull, indicated by no touching, can't predict this without a traffic map
         mimicPull           //  true counter pull
     }
 

@@ -1,0 +1,8 @@
+1:
+    The program does not close files properly when loading .png files.
+    This can cause crashes when tryng to save a .png file with the same name twice.
+    Or prevent me from saving a .png file when the program is running.
+    Very annoying, seems to be the constructor for Bitmap class that's the problem.
+
+2:
+    The edge vector has a incorrect length.
